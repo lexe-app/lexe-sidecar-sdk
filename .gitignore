@@ -1,0 +1,10 @@
+# Environment variables
+.env
+
+# Explicitly ignore .git so we can use `--hidden` with tools like rg / fastmod
+.git/
+
+# Misc
+.DS_Store
+Session.vim
+.aider*
