@@ -17,6 +17,76 @@ GET http://localhost:5393/v1/node/payment
 you can programmatically control your Lexe node. Your app can be written in any
 language, and is portable to any environment where the `lexe-sidecar` can run.
 
+## Quickstart
+
+Go to your project directory and create your local `.env` from Lexe's example:
+
+```bash
+$ cd ~
+$ mkdir myproject
+$ cd myproject
+$ curl -o .env https://raw.githubusercontent.com/lexe-app/lexe-sidecar-sdk/refs/heads/master/.env.example
+```
+
+Set `LEXE_CLIENT_CREDENTIALS` in `.env` to the client credentials string from
+your Lexe app. To create new client credentials, open the Lexe app and go to
+`App sidebar > "SDK clients" > "Create new client"`.
+
+```bash
+LEXE_CLIENT_CREDENTIALS="eyJsZXhlX2F1dGhfdG9rZ...TA0In0="
+```
+
+Download the `lexe-sidecar` binary to your machine and run it from your project
+directory which contains the `.env` file:
+
+```bash
+# Assumes the binary was downloaded to ~/bin/lexe-sidecar
+$ ./bin/lexe-sidecar
+```
+
+Make your first request to the sidecar:
+
+```bash
+$ curl http://localhost:5393/v1/node/node_info
+```
+
+You're all set up - it's time to build your Lightning app! Here's a prompt which
+allowed us to "vibe code" a fully functional Lightning tip page in less than 4
+minutes with Claude Sonnet 3.7 and [`goose`](https://block.github.io/goose/) -
+Cursor, Windsurf, etc work well too. Since this prompt tells the AI to run the
+sidecar as a subprocess of your app, you should stop the running sidecar first.
+Also be sure to change the project names and paths to match your own machine.
+
+```
+Build a tip page powered by the Lexe API. This will be a python web service that
+renders a simple tip page for visitors to our site. When a visitor taps the tip
+button, the backend will query the Lexe API for a new Lightning invoice and
+render it as a QR code on the frontend. The frontend will repeatedly poll the
+backend for the invoice status until it's paid. Once the invoice is paid,
+it will go the success page and show a confetti animation.
+
+The backend should spawn the Lexe sidecar as a subprocess. The sidecar will
+expose the Lexe API at `http://localhost:5393`. You can find the sidecar binary
+at </Users/satoshi/dev/myproject/lexe-sidecar>. You can find the Lexe API docs
+at: <https://github.com/lexe-app/lexe-sidecar-sdk/blob/master/README.md>. Make
+sure you read this first so you understand how all the pieces fit together.
+
+We're running on macOS and already have python 3.12 installed. You're already
+in the project directory </Users/satoshi/dev/myproject>. Try to use the python
+standard library as much as possible. Create a new python virtual environment to
+keep all the dependencies isolated. The frontend can be a simple HTML page
+rendered by the backend with some basic JS+CSS for polling and rendering the QR
+code. Serve the backend on port 8080.
+
+Don't ask for permission, just start coding.
+```
+
+<!--
+## Demo
+
+TODO(max): Add a link here to our demo video
+-->
+
 ## REST API Reference
 
 The Lexe SDK sidecar exposes the following REST API endpoints:
