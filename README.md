@@ -3,7 +3,7 @@
 ## Overview
 
 The Lexe Sidecar SDK presents a simple JSON API for developers to control their
-self-custodial, always-online [Lexe](lexe.app) node for sending and receiving
+self-custodial, always-online [Lexe](lexe.app) node which can send and receive
 payments over the Lightning Network. Running the `lexe-sidecar` binary spins up
 a local webserver (the "sidecar") at `http://localhost:5393` which accepts REST
 requests and proxies them to your Lexe node. By making simple HTTP requests like
@@ -67,7 +67,7 @@ it will go the success page and show a confetti animation.
 
 The backend should spawn the Lexe sidecar as a subprocess. The sidecar will
 expose the Lexe API at `http://localhost:5393`. You can find the sidecar binary
-at </Users/satoshi/dev/myproject/lexe-sidecar>. You can find the Lexe API docs
+at </Users/satoshi/bin/lexe-sidecar>. You can find the Lexe API docs
 at: <https://github.com/lexe-app/lexe-sidecar-sdk/blob/master/README.md>. Make
 sure you read this first so you understand how all the pieces fit together.
 
