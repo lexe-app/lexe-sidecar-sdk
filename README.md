@@ -120,6 +120,8 @@ of a payment using the `GET /v1/node/payment?index=<index>` endpoint.
 (1 BTC = 100,000,000 satoshis) and serialized as strings. The representation
 supports up-to millisatoshi precision (1 satoshi = 1,000 millisatoshis).
 
+All timestamps indicate the number of milliseconds since the UNIX epoch.
+
 Prefer longer request timeouts (e.g. 15 seconds) since your node may need time
 to startup and sync if it hasn't received any requests in a while.
 
@@ -139,30 +141,46 @@ $ curl http://localhost:5393/v1/health
 
 Fetch information about the node and wallet balance.
 
+**Request:**
+
+Empty.
+
+**Response:**
+
+- `version`: The node's current semver version, e.g. `0.6.9`.
+- `measurement`: The hex-encoded SGX 'measurement' of the current node. The measurement is the hash of the enclave binary.
+- `user_pk`: The hex-encoded ed25519 user public key used to identify a Lexe user. The user keypair is derived from the root seed.
+- `node_pk`: The hex-encoded secp256k1 Lightning node public key; the `node_id`.
+
+- `balance`: The sum of our `lightning_balance` and our `onchain_balance`, in sats.
+
+- `lightning_balance`: Total Lightning balance in sats, summed over all of our channels.
+- `usable_lightning_balance`: Total usable Lightning balance in sats, summing all *usable* channels.
+- `max_sendable_lightning_balance`: The maximum amount that we could possibly send over Lightning, in sats. Is strictly less than `usable_lightning_balance`. Accounts for usable channels, LSP fees, and other LN protocol limits including channel reserves, pending HTLCs, per-HTLC limits, etc. Exactly this amount may be sendable only in very specific scenarios, such as paying another Lexe user.
+
+- `onchain_balance`: Total on-chain balance in sats, including unconfirmed funds.
+- `trusted_onchain_balance`: Trusted on-chain balance in sats, including only confirmed funds and unconfirmed outputs originating from our own wallet.
+
+- `num_channels`: The total number of Lightning channels.
+- `num_usable_channels`: The number of channels which are currently usable, i.e. `channel_ready` messages have been exchanged and the channel peer is online. Is always less than or equal to `num_channels`.
+
 **Examples:**
 
 ```bash
 $ curl http://localhost:5393/v1/node/node_info | jq .
 {
-  "version": "0.7.5",
-  "measurement": "061e666a31d6aadfa1a70b4664632729ce4aa07814e7af8132d1d923380e8f45",
-  "node_pk": "03d82ea1c737865c93bf7468b7f350203e71ac092af32c85e2d186eb007ced3ad6",
-  "num_peers": 1,
-  "num_usable_channels": 2,
-  "num_channels": 2,
-  "lightning_balance": {
-    "usable": "100246",
-    "sendable": "87613.268",
-    "max_sendable": "87971.572",
-    "pending": "0"
-  },
-  "onchain_balance": {
-    "immature": 0,
-    "trusted_pending": 0,
-    "untrusted_pending": 0,
-    "confirmed": 0
-  },
-  "pending_monitor_updates": 1
+  "version": "0.7.9",
+  "measurement": "f7415694ca3262f8b479d915a1799f896902a8697c469f69d9a86eb8c9f1089f",
+  "user_pk": "b484a4890b47358ee68684bcd502d2eefa1bc66cc0f8ac2e5f06384676be74eb",
+  "node_pk": "0203e73be064cc91d5e3c96d8e2f2f124f3196e07e9916b51307b6ff5419b59f6e",
+  "balance": "134736",
+  "lightning_balance": "75282",
+  "usable_lightning_balance": "75282",
+  "max_sendable_lightning_balance": "57203.107",
+  "onchain_balance": "59454",
+  "trusted_onchain_balance": "59454",
+  "num_channels": 5,
+  "num_usable_channels": 5
 }
 ```
 
@@ -175,7 +193,7 @@ network.
 
 The request body should be a JSON object with the following fields:
 
-* `expiry_secs: Int`: The number of seconds until the invoice expires.
+* `expiration_secs: Int`: The number of seconds until the invoice expires.
 * `amount: String` (optional): The amount to request in satoshis, as a string.
   If not specified, the payer will decide the amount.
 * `description: String` (optional): The payment description that will be
@@ -189,12 +207,21 @@ the payer to complete the payment.
 The `index` is a unique identifier for the invoice, which can be used to track
 the payment status via `GET /v1/node/payment`.
 
+- `index`: Identifier for this inbound invoice payment.
+- `invoice`: The string-encoded BOLT 11 invoice.
+- `description`: The description encoded in the invoice, if one was provided.
+- `amount`: The amount encoded in the invoice, if there was one. Returning `null` means we created an amountless invoice.
+- `created_at`: The invoice creation time, in milliseconds since the UNIX epoch.
+- `expires_at`: The invoice expiration time, in milliseconds since the UNIX epoch.
+- `payment_hash`: The hex-encoded payment hash of the invoice.
+- `payment_secret`: The payment secret of the invoice.
+
 **Examples:**
 
 ```bash
 $ curl -X POST http://localhost:5393/v1/node/create_invoice \
     --header "content-type: application/json" \
-    --data '{ "expiry_secs": 3600 }' \
+    --data '{ "expiration_secs": 3600 }' \
     | jq .
 {
   "index": "0000001744926519917-ln_9be5e4e3a0356cc4a7a1dce5a4af39e2896b7eb7b007ec6ca8c2f8434f21a63a",
@@ -209,7 +236,7 @@ $ curl -X POST http://localhost:5393/v1/node/create_invoice \
 
 $ curl -X POST http://localhost:5393/v1/node/create_invoice \
     --header "content-type: application/json" \
-    --data '{ "expiry_secs": 3600, "amount": "1000", "description": "Lunch" }' \
+    --data '{ "expiration_secs": 3600, "amount": "1000", "description": "Lunch" }' \
     | jq .
 {
   "index": "0000001744926580307-ln_12c8ec9465cff06b756b9f20dbdfd9d4b03b3c153bd39a5401c61a0241bd1e96",
@@ -232,14 +259,16 @@ Pay a BOLT11 Lightning invoice.
 The request body should be a JSON object with the following fields:
 
 * `invoice: String`: The encoded invoice string to pay.
-* `fallback_amount: String` (optional): For invoices without an amount specified, you
-  must specify a fallback amount to pay.
-* `note: String` (optional): A personal note to attach to the payment.
+* `fallback_amount: String` (optional): For invoices without an amount specified, you must specify a fallback amount to pay.
+* `note: String` (optional): A personal note to attach to the payment. The receiver will not see this note.
 
 **Response:**
 
 The response includes the `index` of the payment, which can be used to track the
 payment status via `GET /v1/node/payment`.
+
+- `index`: Identifier for this outbound invoice payment.
+- `created_at`: When we tried to pay this invoice, in milliseconds since the UNIX epoch.
 
 **Examples:**
 
@@ -266,6 +295,19 @@ the payment any more.
 The request should include the `index` of the payment query as a query string
 parameter.
 
+**Response:**
+
+Payment details are nested within a returned `payment` field.
+
+- `index`: Identifier for this payment.
+- `kind`: The payment type: ["onchain", "invoice", "offer", "spontaneous"].
+- `direction`: The payment direction: ["inbound", "outbound"].
+- `txid`: (Onchain payments only) The txid of the on-chain payment.
+- `replacement`: (Onchain payments only) The hex-encoded txid of the transaction that spent the outputs spent by this on-chain payment, if one exists.
+- `status`: The status of this payment: ["pending", "completed", "failed"].
+- `status_msg`: The payment status as a human-readable message. These strings are customized per payment type, e.g. "invoice generated", "timed out".
+- `finalized_at`: If this payment is finalized, meaning it is "completed" or "failed", this is the time it was finalized, in milliseconds since the UNIX epoch.
+
 **Examples:**
 
 ```bash
@@ -276,10 +318,13 @@ $ curl 'http://localhost:5393/v1/node/payment?index=0000001744926519917-ln_9be5e
     "index": "0000001744926519917-ln_9be5e4e3a0356cc4a7a1dce5a4af39e2896b7eb7b007ec6ca8c2f8434f21a63a",
     "kind": "invoice",
     "direction": "inbound",
-    "invoice": "lnbc1p5qzaehdqqpp5n0j7fcaqx4kvffapmnj6fteeu2ykkl4hkqr7cm9gctuyxnep5caqcqpcsp5slzxgxrsu3jq8xq7rp2gx3ge0thlt3446jpp8kqs87pve60679ls9qyysgqxqrrssnp4q0vzagw8x7r9eyalw35t0u6syql8rtqf9tejep0z6xrwkqrua5advrzjqv22wafr68wtchd4vzq7mj7zf2uzpv67xsaxcemfzak7wp7p0r29wzmk4uqqj5sqqyqqqqqqqqqqhwqqfq89vuhjlg2tt56sv9pdt8t5cvdgfaaf6nxqtt0av74ragpql7l2d42euknlw06fcgp8xhe93xe7c802z3hrnysfsjgavmwfts7zdvj2cqka3672",
+    "txid": null,
+    "replacement": null,
+    "amount": null,
     "fees": "0",
     "status": "pending",
-    "status_str": "invoice generated"
+    "status_msg": "invoice generated",
+    "note": null
   }
 }
 
@@ -290,11 +335,13 @@ $ curl 'http://localhost:5393/v1/node/payment?index=0000001744926842458-ln_e1f8e
     "index": "0000001744926842458-ln_e1f8e7fa3f3b43eb65afe4897ca1c63688636ba0a23b3011710e433b51bb3f9a",
     "kind": "invoice",
     "direction": "outbound",
-    "invoice": "lnbc100n1p5qz7z2dq58skjqnr90pjjq4r9wd6qpp5u8uw073l8dp7ked0ujyhegwxx6yxx6aq5ganqyt3pepnk5dm87dqcqpcsp5nrs44f3upgxysnylrrpyrxs96mgazjjstuykyew74zv0najzkdeq9qyysgqxqyz5vqnp4q0w73a6xytxxrhuuvqnqjckemyhv6avveuftl64zzm5878vq3zr4jrzjqv22wafr68wtchd4vzq7mj7zf2uzpv67xsaxcemfzak7wp7p0r29wz5ecsqq2pgqqcqqqqqqqqqqhwqqfqrpeeq5xdys8vcfcark45w992h6j5nhajc62wet0q25ggxjwhtcfn8c3qx30fqzq8mqxfdtks57zw25zp0z2kl9yrfwkkthxclawxpfcqtdcpfu",
+    "txid": null,
+    "replacement": null,
     "amount": "10",
     "fees": "0.03",
     "status": "completed",
-    "status_str": "completed",
+    "status_msg": "completed",
+    "note": "My personal note",
     "finalized_at": 1744926857989
   }
 }
