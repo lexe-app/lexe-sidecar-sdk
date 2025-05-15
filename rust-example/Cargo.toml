@@ -1,0 +1,30 @@
+[package]
+name = "rust-example"
+version = "0.0.0"
+edition = "2021"
+
+[dependencies]
+
+# `sdk-sidecar` is the name of the sidecar crate within Lexe's monorepo.
+lexe-sidecar = { package = "sdk-sidecar", git = "https://github.com/lexe-app/lexe-public" }
+
+anyhow = "1"
+dotenvy = "0.15"
+tokio = { version = "1", features = [
+    "macros",
+    "rt",
+    "rt-multi-thread",
+] }
+tracing = "0.1"
+
+# - Lexe currently uses rustls 0.22, but no `axum-server` version supports this.
+#   Use Lexe's `axum-server` fork which supports rustls@0.22.
+#   TODO(max): Update to rustls@0.23 so this can be removed
+# - Lexe needs access to `ProxyScheme` within `reqwest` to support Lexe's TLS
+#   scheme. Use Lexe's `reqwest` fork which exposes this.
+axum-server = "=0.6.0"
+reqwest = { version = "=0.12.1", default-features = false, features = ["http2", "rustls-tls-manual-roots"] }
+
+[patch.crates-io]
+axum-server = { git = "https://github.com/lexe-app/axum-server", branch = "lexe-v0.6.0-2024_10_11" }
+reqwest = { git = "https://github.com/lexe-app/reqwest", branch = "lexe-v0.12.1-2024_10_11" }
