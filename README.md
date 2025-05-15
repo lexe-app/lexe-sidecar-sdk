@@ -18,8 +18,16 @@ you can programmatically control your Lexe node. Your app can be written in any
 language, and is portable to any environment where the `lexe-sidecar` can run.
 
 This repo contains public-facing docs for the Lexe Sidecar SDK.
-The sidecar CLI and webserver source code can be found in the Lexe monorepo at:
+The `lexe-sidecar` source code can be found in the Lexe monorepo at:
 <https://github.com/lexe-app/lexe-public/tree/master/sdk-sidecar>
+
+## Acquiring the `lexe-sidecar`
+
+There are two main ways to acquire the `lexe-sidecar` binary:
+
+1) Download the precompiled binary from the *Releases* page
+   (work in progress; will be available in the next 1-2 days!)
+2) Build the binary from Rust source: see [BUILD.md](BUILD.md) for instructions.
 
 ## Quickstart
 
@@ -45,7 +53,7 @@ directory which contains the `.env` file:
 
 ```bash
 # Assumes the binary was downloaded to ~/bin/lexe-sidecar
-$ ./bin/lexe-sidecar
+$ ~/bin/lexe-sidecar
 ```
 
 Make your first request to the sidecar:
