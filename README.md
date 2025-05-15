@@ -29,6 +29,17 @@ There are two main ways to acquire the `lexe-sidecar` binary:
    (work in progress; will be available in the next 1-2 days!)
 2) Build the binary from Rust source: see [BUILD.md](BUILD.md) for instructions.
 
+### Using the `lexe-sidecar` as a Rust library
+
+If you are working in Rust, you may also use the `lexe-sidecar` as a Rust
+library, which provides:
+
+- A `Sidecar` webserver which can be `.run()` within your async Rust app.
+- A `SidecarClient` which fully implements the sidecar API.
+
+See [example-rust](example-rust) for an example which implements both a sidecar
+client and server.
+
 ## Quickstart
 
 Go to your project directory and create your local `.env` from Lexe's example:
