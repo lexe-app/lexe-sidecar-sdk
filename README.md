@@ -17,6 +17,10 @@ GET http://localhost:5393/v1/node/payment
 you can programmatically control your Lexe node. Your app can be written in any
 language, and is portable to any environment where the `lexe-sidecar` can run.
 
+This repo contains public-facing docs for the Lexe Sidecar SDK.
+The sidecar CLI and webserver source code can be found in the Lexe monorepo at:
+<https://github.com/lexe-app/lexe-public/tree/master/sdk-sidecar>
+
 ## Quickstart
 
 Go to your project directory and create your local `.env` from Lexe's example:
