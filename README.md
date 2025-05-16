@@ -21,16 +21,62 @@ This repo contains public-facing docs for the Lexe Sidecar SDK.
 The `lexe-sidecar` source code can be found in the Lexe monorepo at:
 <https://github.com/lexe-app/lexe-public/tree/master/sdk-sidecar>
 
-## Acquiring the `lexe-sidecar`
+## Quickstart
 
-There are two main ways to acquire the `lexe-sidecar` binary:
+### Download the Lexe Wallet app
 
-1) Download the precompiled binary from the *Releases* page
+To get started, you'll need a Lexe wallet. Download the mobile app for:
+
+* iOS (Testflight): <https://lexe.app/beta-ios>
+* Android (Play Store): <https://lexe.app/beta-android>
+
+_iOS users_: Testflight sometimes asks for an "access code", which is different
+from our signup code; you may need to reinstall the Testflight app to get past
+this.
+
+Next, create a new wallet, enter the signup code sent to your email, connect
+your Google Drive (for backups), and set a backup password. This will create a
+new self-custody Bitcoin+Lightning wallet that runs in a secure enclave in the
+cloud; you can now send and receive Lightning payments 24/7!
+
+### Export client credentials for the SDK
+
+To control your wallet using the Lexe Sidecar SDK, you'll first need to export
+client credentials from the app:
+
+1. Open the Lexe app > Menu sidebar > "SDK clients" > "Create new client"
+2. Copy the client credentials string
+
+Go to your project directory and create your local `.env` from Lexe's example:
+
+```bash
+$ git clone https://github.com/lexe-app/lexe-sidecar-sdk.git
+$ cd myproject
+$ cp ../lexe-sidecar-sdk/.env.example ./.env
+$ chmod 600 .env
+```
+
+Set `LEXE_CLIENT_CREDENTIALS` in `.env` to the client credentials string from
+your Lexe app.
+
+```bash
+LEXE_CLIENT_CREDENTIALS="eyJsZXhlX2F1dGhfdG9rZ...TA0In0="
+```
+
+### Get the `lexe-sidecar` binary
+
+The Lexe Sidecar SDK is distributed as a single self-contained binary called
+`lexe-sidecar`. It runs a local stateless webserver that accepts HTTP requests
+and manages the connection to your Lexe node.
+
+There are two main ways to get the `lexe-sidecar` binary:
+
+1) (Easy) Download a precompiled binary from the [Releases](https://github.com/lexe-app/lexe-sidecar-sdk/releases) page
 2) Build the binary from Rust source: see [BUILD.md](BUILD.md) for instructions.
 
-### Using the `lexe-sidecar` as a Rust library
+#### Using the `lexe-sidecar` as a Rust library
 
-If you are working in Rust, you may also use the `lexe-sidecar` as a Rust
+If you're working in Rust, you may also use the `lexe-sidecar` as a Rust
 library, which provides:
 
 - A `Sidecar` webserver which can be `.run()` within your async Rust app.
@@ -39,31 +85,12 @@ library, which provides:
 See [example-rust](example-rust) for an example which implements both a sidecar
 client and server.
 
-## Quickstart
-
-Go to your project directory and create your local `.env` from Lexe's example:
-
-```bash
-$ git clone https://github.com/lexe-app/lexe-sidecar-sdk.git
-$ mkdir myproject
-$ cd myproject
-$ cp ../lexe-sidecar-sdk/.env.example ./
-```
-
-Set `LEXE_CLIENT_CREDENTIALS` in `.env` to the client credentials string from
-your Lexe app. To create new client credentials, open the Lexe app and go to
-`App sidebar > "SDK clients" > "Create new client"`.
-
-```bash
-LEXE_CLIENT_CREDENTIALS="eyJsZXhlX2F1dGhfdG9rZ...TA0In0="
-```
-
 Download the `lexe-sidecar` binary to your machine and run it from your project
 directory which contains the `.env` file:
 
 ```bash
-# Assumes the binary was downloaded to ~/bin/lexe-sidecar
-$ ~/bin/lexe-sidecar
+# Assumes the binary was downloaded to ./bin/lexe-sidecar
+$ ./bin/lexe-sidecar
 ```
 
 Make your first request to the sidecar:
@@ -119,7 +146,7 @@ Don't ask for permission, just start coding.
 
 ## Demo
 
-Watch a Lexe dev vibe code a fully functional Lightning tip page using the above
+Watch us vibe code a fully functional Lightning tip page using the above
 prompt in less than 3 minutes:
 
 [Watch video](https://youtu.be/svGZW7IrK9M)
