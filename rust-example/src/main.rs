@@ -1,7 +1,4 @@
-use std::{
-    env,
-    net::{SocketAddr, TcpListener, TcpStream},
-};
+use std::{env, net::SocketAddr};
 
 use anyhow::Context;
 use lexe_sidecar::{
@@ -80,10 +77,10 @@ fn init_server(
     let mut args = SidecarArgs::default();
     args.or_env_mut()?;
 
-    // (Optional) Use an ephemeral port instead of a fixed port so we don't have
-    // port conflicts in case this program needs multiple sidecars.
-    let port = get_ephemeral_port().context("Couldn't get ephemeral port")?;
-    let addr = SocketAddr::from(([127, 0, 0, 1], port));
+    // (Optional) Use port 0 so the OS assigns a port to us. This lets us avoid
+    // port conflicts if we need to run multiple sidecars, each with different
+    // credentials. The final port is returned to us via `sidecar_url` below.
+    let addr = SocketAddr::from(([127, 0, 0, 1], 0)); // 127.0.0.1:0
     args.listen_addr = Some(addr);
 
     // Already handled by `args.or_env_mut()`, but demonstrates how to construct
@@ -112,25 +109,4 @@ fn init_server(
     info!("Sidecar server initialized; running at {sidecar_url}");
 
     Ok((sidecar_task, sidecar_url, sidecar_shutdown))
-}
-
-/// Returns an ephemeral port assigned by the OS which should be available for
-/// the next ~60s after this function is called.
-fn get_ephemeral_port() -> anyhow::Result<u16> {
-    // Request a random available port from the OS
-    let listener =
-        TcpListener::bind(SocketAddr::from(([0, 0, 0, 0, 0, 0, 0, 1], 0)))
-            .expect("Could not bind TcpListener");
-    let addr = listener
-        .local_addr()
-        .context("Could not get local address")?;
-
-    // Create and accept a connection (which we'll promptly drop) in order to
-    // force the port into the TIME_WAIT state, ensuring that the port will be
-    // reserved from some limited amount of time (~60s on some Linux systems)
-    let _sender =
-        TcpStream::connect(addr).context("TcpStream::connect failed")?;
-    let _incoming = listener.accept().context("TcpListener::accept failed")?;
-
-    Ok(addr.port())
 }
