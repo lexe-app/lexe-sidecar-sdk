@@ -109,6 +109,18 @@ Don't ask for permission, just start coding.
 TODO(max): Add a link here to our demo video
 -->
 
+## Demo
+
+Watch a Lexe dev vibe code a fully functional Lightning tip page using the above
+prompt in less than 3 minutes:
+
+[Watch video](https://youtu.be/svGZW7IrK9M)
+
+[![Watch the demo](demo-thumbnail.jpg)](https://youtu.be/svGZW7IrK9M)
+
+<!-- TODO(max): This should work too, but video is uploading rn -->
+<!-- [![Watch the video](https://img.youtube.com/vi/svGZW7IrK9M/0.jpg)](https://www.youtube.com/watch?v=svGZW7IrK9M) -->
+
 ## REST API Reference
 
 The Lexe SDK sidecar exposes the following REST API endpoints:
