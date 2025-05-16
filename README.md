@@ -26,7 +26,6 @@ The `lexe-sidecar` source code can be found in the Lexe monorepo at:
 There are two main ways to acquire the `lexe-sidecar` binary:
 
 1) Download the precompiled binary from the *Releases* page
-   (work in progress; will be available in the next 1-2 days!)
 2) Build the binary from Rust source: see [BUILD.md](BUILD.md) for instructions.
 
 ### Using the `lexe-sidecar` as a Rust library
