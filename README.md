@@ -3,7 +3,7 @@
 ## Overview
 
 The Lexe Sidecar SDK presents a simple JSON API for developers to control their
-self-custodial, always-online [Lexe](lexe.app) node which can send and receive
+self-custodial, always-online [Lexe](https://lexe.app) node which can send and receive
 payments over the Lightning Network. Running the `lexe-sidecar` binary spins up
 a local webserver (the "sidecar") at `http://localhost:5393` which accepts REST
 requests and proxies them to your Lexe node. By making simple HTTP requests like
@@ -44,10 +44,10 @@ client and server.
 Go to your project directory and create your local `.env` from Lexe's example:
 
 ```bash
-$ cd ~
+$ git clone https://github.com/lexe-app/lexe-sidecar-sdk.git
 $ mkdir myproject
 $ cd myproject
-$ curl -o .env https://raw.githubusercontent.com/lexe-app/lexe-sidecar-sdk/refs/heads/master/.env.example
+$ cp ../lexe-sidecar-sdk/.env.example ./
 ```
 
 Set `LEXE_CLIENT_CREDENTIALS` in `.env` to the client credentials string from
@@ -69,10 +69,24 @@ $ ~/bin/lexe-sidecar
 Make your first request to the sidecar:
 
 ```bash
-$ curl http://localhost:5393/v1/node/node_info
+$ curl http://localhost:5393/v1/node/node_info | jq .
+{
+  "version": "0.7.9",
+  "measurement": "6d6ae19f2a82167abecd7bbe834e417a1b3c9c8971d08bd05b24533de21bf3f1",
+  "user_pk": "63ad1661bfc23ad25f5bcc6f610f8fd70d7426de51be74766c24e47f4b4fcfca",
+  "node_pk": "02e4d8f86591eb2ce59a787e2a5abb83278c86198ac22854e9e3cf365cf8d9730f",
+  "balance": "95507",
+  "lightning_balance": "40000",
+  "usable_lightning_balance": "40000",
+  "max_sendable_lightning_balance": "39824.777",
+  "onchain_balance": "55507",
+  "trusted_onchain_balance": "55507",
+  "num_channels": 1,
+  "num_usable_channels": 1
+}
 ```
 
-You're all set up - it's time to build your Lightning app! Here's a prompt which
+You're all set  - it's time to build your Lightning app! Here's a prompt which
 allowed us to "vibe code" a fully functional Lightning tip page in less than 4
 minutes with Claude Sonnet 3.7 and [`goose`](https://block.github.io/goose/) -
 Cursor, Windsurf, etc work well too. Since this prompt tells the AI to run the
@@ -89,9 +103,9 @@ it will go the success page and show a confetti animation.
 
 The backend should spawn the Lexe sidecar as a subprocess. The sidecar will
 expose the Lexe API at `http://localhost:5393`. You can find the sidecar binary
-at </Users/satoshi/bin/lexe-sidecar>. You can find the Lexe API docs
-at: <https://github.com/lexe-app/lexe-sidecar-sdk/blob/master/README.md>. Make
-sure you read this first so you understand how all the pieces fit together.
+at </Users/satoshi/.local/bin/lexe-sidecar>. You can find the Lexe API docs
+at: </Users/satoshi/dev/lexe-sidecar-sdk/README.md>. Make sure you read this
+first so you understand how all the pieces fit together.
 
 We're running on macOS and already have python 3.12 installed. You're already
 in the project directory </Users/satoshi/dev/myproject>. Try to use the python
@@ -102,12 +116,6 @@ code. Serve the backend on port 8080.
 
 Don't ask for permission, just start coding.
 ```
-
-<!--
-## Demo
-
-TODO(max): Add a link here to our demo video
--->
 
 ## Demo
 
