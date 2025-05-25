@@ -177,11 +177,17 @@ Empty.
 - `balance`: The sum of our `lightning_balance` and our `onchain_balance`, in sats.
 
 - `lightning_balance`: Total Lightning balance in sats, summed over all of our channels.
-- `usable_lightning_balance`: Total usable Lightning balance in sats, summing all *usable* channels.
-- `max_sendable_lightning_balance`: The maximum amount that we could possibly send over Lightning, in sats. Is strictly less than `usable_lightning_balance`. Accounts for usable channels, LSP fees, and other LN protocol limits including channel reserves, pending HTLCs, per-HTLC limits, etc. Exactly this amount may be sendable only in very specific scenarios, such as paying another Lexe user.
+- `lightning_sendable_balance`: An estimated upper bound, in sats, on how much
+  of our Lightning balance we can send to most recipients on the Lightning
+  Network, accounting for Lightning limits such as our channel reserve, pending
+  HTLCs, fees, etc. You should usually be able to spend this amount.
+- `lightning_max_sendable_balance`: A hard upper bound on how much of our
+  Lightning balance can be spent right now, in sats. This is always >=
+  `lightning_sendable_balance`. Generally it is only possible to spend exactly
+  this amount if the recipient is a Lexe user.
 
 - `onchain_balance`: Total on-chain balance in sats, including unconfirmed funds.
-- `trusted_onchain_balance`: Trusted on-chain balance in sats, including only confirmed funds and unconfirmed outputs originating from our own wallet.
+- `onchain_trusted_balance`: Trusted on-chain balance in sats, including only confirmed funds and unconfirmed outputs originating from our own wallet.
 
 - `num_channels`: The total number of Lightning channels.
 - `num_usable_channels`: The number of channels which are currently usable, i.e. `channel_ready` messages have been exchanged and the channel peer is online. Is always less than or equal to `num_channels`.
@@ -191,16 +197,16 @@ Empty.
 ```bash
 $ curl http://localhost:5393/v1/node/node_info | jq .
 {
-  "version": "0.7.9",
+  "version": "0.7.10",
   "measurement": "f7415694ca3262f8b479d915a1799f896902a8697c469f69d9a86eb8c9f1089f",
   "user_pk": "b484a4890b47358ee68684bcd502d2eefa1bc66cc0f8ac2e5f06384676be74eb",
   "node_pk": "0203e73be064cc91d5e3c96d8e2f2f124f3196e07e9916b51307b6ff5419b59f6e",
   "balance": "134736",
   "lightning_balance": "75282",
-  "usable_lightning_balance": "75282",
-  "max_sendable_lightning_balance": "57203.107",
+  "lightning_sendable_balance": "57505.107",
+  "lightning_max_sendable_balance": "57203.107",
   "onchain_balance": "59454",
-  "trusted_onchain_balance": "59454",
+  "onchain_trusted_balance": "59454",
   "num_channels": 5,
   "num_usable_channels": 5
 }
