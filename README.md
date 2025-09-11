@@ -9,9 +9,10 @@ a local webserver (the "sidecar") at `http://localhost:5393` which accepts REST
 requests and proxies them to your Lexe node. By making simple HTTP requests like
 
 ```
-POST http://localhost:5393/v1/node/create_invoice
-POST http://localhost:5393/v1/node/pay_invoice
-GET http://localhost:5393/v1/node/payment
+GET  http://localhost:5393/v2/node/node_info
+POST http://localhost:5393/v2/node/create_invoice
+POST http://localhost:5393/v2/node/pay_invoice
+GET  http://localhost:5393/v2/node/payment
 ```
 
 you can programmatically control your Lexe node. Your app can be written in any
@@ -103,7 +104,7 @@ $ ./bin/lexe-sidecar
 Make your first request to the sidecar:
 
 ```bash
-$ curl http://localhost:5393/v1/node/node_info | jq .
+$ curl http://localhost:5393/v2/node/node_info | jq .
 {
   "version": "0.7.9",
   "measurement": "6d6ae19f2a82167abecd7bbe834e417a1b3c9c8971d08bd05b24533de21bf3f1",
@@ -120,7 +121,7 @@ $ curl http://localhost:5393/v1/node/node_info | jq .
 }
 ```
 
-You're all set  - it's time to build your Lightning app! Here's a prompt which
+You're all set - it's time to build your Lightning app! Here's a prompt which
 allowed us to "vibe code" a fully functional Lightning tip page in less than 4
 minutes with Claude Sonnet 3.7 and [`goose`](https://block.github.io/goose/) -
 Cursor, Windsurf, etc work well too. Since this prompt tells the AI to run the
@@ -181,17 +182,17 @@ prompt in less than 3 minutes:
 The Lexe SDK sidecar exposes the following REST API endpoints:
 
 ```
-GET /v1/health
-GET /v1/node/node_info
-POST /v1/node/create_invoice
-POST /v1/node/pay_invoice
-GET /v1/node/payment
+GET  /v2/health
+GET  /v2/node/node_info
+POST /v2/node/create_invoice
+POST /v2/node/pay_invoice
+GET  /v2/node/payment
 ```
 
 ### Conventions
 
 Payments are uniquely identified by their `index` value string. Fetch the status
-of a payment using the `GET /v1/node/payment?index=<index>` endpoint.
+of a payment using the `GET /v2/node/payment?index=<index>` endpoint.
 
 `amount` values are fixed-precision decimal values denominated in satoshis
 (1 BTC = 100,000,000 satoshis) and serialized as strings. The representation
@@ -202,7 +203,7 @@ All timestamps indicate the number of milliseconds since the UNIX epoch.
 Prefer longer request timeouts (e.g. 15 seconds) since your node may need time
 to startup and sync if it hasn't received any requests in a while.
 
-### `GET /v1/health`
+### `GET /v2/health`
 
 Get the health status of the Lexe SDK sidecar. Returns HTTP 200 once the sidecar
 is running and ready to accept requests.
@@ -210,11 +211,11 @@ is running and ready to accept requests.
 **Examples:**
 
 ```bash
-$ curl http://localhost:5393/v1/health
+$ curl http://localhost:5393/v2/health
 { "status": "ok" }
 ```
 
-### `GET /v1/node/node_info`
+### `GET /v2/node/node_info`
 
 Fetch information about the node and wallet balance.
 
@@ -250,7 +251,7 @@ Empty.
 **Examples:**
 
 ```bash
-$ curl http://localhost:5393/v1/node/node_info | jq .
+$ curl http://localhost:5393/v2/node/node_info | jq .
 {
   "version": "0.7.10",
   "measurement": "f7415694ca3262f8b479d915a1799f896902a8697c469f69d9a86eb8c9f1089f",
@@ -267,7 +268,7 @@ $ curl http://localhost:5393/v1/node/node_info | jq .
 }
 ```
 
-### `POST /v1/node/create_invoice`
+### `POST /v2/node/create_invoice`
 
 Create a new BOLT11 Lightning invoice to receive Bitcoin over the Lightning
 network.
@@ -288,7 +289,7 @@ The response includes the encoded `invoice` string, which should be presented to
 the payer to complete the payment.
 
 The `index` is a unique identifier for the invoice, which can be used to track
-the payment status via `GET /v1/node/payment`.
+the payment status via `GET /v2/node/payment`.
 
 - `index`: Identifier for this inbound invoice payment.
 - `invoice`: The string-encoded BOLT 11 invoice.
@@ -302,7 +303,7 @@ the payment status via `GET /v1/node/payment`.
 **Examples:**
 
 ```bash
-$ curl -X POST http://localhost:5393/v1/node/create_invoice \
+$ curl -X POST http://localhost:5393/v2/node/create_invoice \
     --header "content-type: application/json" \
     --data '{ "expiration_secs": 3600 }' \
     | jq .
@@ -317,7 +318,7 @@ $ curl -X POST http://localhost:5393/v1/node/create_invoice \
   "payment_secret": "87c4641870e46403981e18548345197aeff5c6b5d48213d8103f82cce9faf17f"
 }
 
-$ curl -X POST http://localhost:5393/v1/node/create_invoice \
+$ curl -X POST http://localhost:5393/v2/node/create_invoice \
     --header "content-type: application/json" \
     --data '{ "expiration_secs": 3600, "amount": "1000", "description": "Lunch" }' \
     | jq .
@@ -333,7 +334,7 @@ $ curl -X POST http://localhost:5393/v1/node/create_invoice \
 }
 ```
 
-### `POST /v1/node/pay_invoice`
+### `POST /v2/node/pay_invoice`
 
 Pay a BOLT11 Lightning invoice.
 
@@ -348,7 +349,7 @@ The request body should be a JSON object with the following fields:
 **Response:**
 
 The response includes the `index` of the payment, which can be used to track the
-payment status via `GET /v1/node/payment`.
+payment status via `GET /v2/node/payment`.
 
 - `index`: Identifier for this outbound invoice payment.
 - `created_at`: When we tried to pay this invoice, in milliseconds since the UNIX epoch.
@@ -356,7 +357,7 @@ payment status via `GET /v1/node/payment`.
 **Examples:**
 
 ```bash
-$ curl -X POST http://localhost:5393/v1/node/pay_invoice \
+$ curl -X POST http://localhost:5393/v2/node/pay_invoice \
     --header "content-type: application/json" \
     --data '{ "invoice": "lnbc100n1p5qz7z2dq58skjqnr90pjjq4r9wd6qpp5u8uw073l8dp7ked0ujyhegwxx6yxx6aq5ganqyt3pepnk5dm87dqcqpcsp5nrs44f3upgxysnylrrpyrxs96mgazjjstuykyew74zv0najzkdeq9qyysgqxqyz5vqnp4q0w73a6xytxxrhuuvqnqjckemyhv6avveuftl64zzm5878vq3zr4jrzjqv22wafr68wtchd4vzq7mj7zf2uzpv67xsaxcemfzak7wp7p0r29wz5ecsqq2pgqqcqqqqqqqqqqhwqqfqrpeeq5xdys8vcfcark45w992h6j5nhajc62wet0q25ggxjwhtcfn8c3qx30fqzq8mqxfdtks57zw25zp0z2kl9yrfwkkthxclawxpfcqtdcpfu" }' \
     | jq .
@@ -366,7 +367,7 @@ $ curl -X POST http://localhost:5393/v1/node/pay_invoice \
 }
 ```
 
-### `GET /v1/node/payment`
+### `GET /v2/node/payment`
 
 Use this endpoint to query the status of a payment or invoice. Payments will transition
 through the following `status` states: `"pending" -> "completed"` or `"pending" -> "failed"`.
@@ -380,7 +381,8 @@ parameter.
 
 **Response:**
 
-Payment details are nested within a returned `payment` field.
+The response includes the payment details.
+If the payment is not found, the endpoint returns HTTP 404.
 
 - `index`: Identifier for this payment.
 - `kind`: The payment type: ["onchain", "invoice", "offer", "spontaneous"].
@@ -394,38 +396,47 @@ Payment details are nested within a returned `payment` field.
 **Examples:**
 
 ```bash
-$ curl 'http://localhost:5393/v1/node/payment?index=0000001744926519917-ln_9be5e4e3a0356cc4a7a1dce5a4af39e2896b7eb7b007ec6ca8c2f8434f21a63a' \ 
+$ curl 'http://localhost:5393/v2/node/payment?index=0000001744926519917-ln_9be5e4e3a0356cc4a7a1dce5a4af39e2896b7eb7b007ec6ca8c2f8434f21a63a' \
      | jq .
 {
-  "payment": {
-    "index": "0000001744926519917-ln_9be5e4e3a0356cc4a7a1dce5a4af39e2896b7eb7b007ec6ca8c2f8434f21a63a",
-    "kind": "invoice",
-    "direction": "inbound",
-    "txid": null,
-    "replacement": null,
-    "amount": null,
-    "fees": "0",
-    "status": "pending",
-    "status_msg": "invoice generated",
-    "note": null
-  }
+  "index": "0000001744926519917-ln_9be5e4e3a0356cc4a7a1dce5a4af39e2896b7eb7b007ec6ca8c2f8434f21a63a",
+  "kind": "invoice",
+  "direction": "inbound",
+  "txid": null,
+  "replacement": null,
+  "amount": null,
+  "fees": "0",
+  "status": "pending",
+  "status_msg": "invoice generated",
+  "note": null
 }
 
-$ curl 'http://localhost:5393/v1/node/payment?index=0000001744926842458-ln_e1f8e7fa3f3b43eb65afe4897ca1c63688636ba0a23b3011710e433b51bb3f9a' \
+$ curl 'http://localhost:5393/v2/node/payment?index=0000001744926842458-ln_e1f8e7fa3f3b43eb65afe4897ca1c63688636ba0a23b3011710e433b51bb3f9a' \
     | jq .
 {
-  "payment": {
-    "index": "0000001744926842458-ln_e1f8e7fa3f3b43eb65afe4897ca1c63688636ba0a23b3011710e433b51bb3f9a",
-    "kind": "invoice",
-    "direction": "outbound",
-    "txid": null,
-    "replacement": null,
-    "amount": "10",
-    "fees": "0.03",
-    "status": "completed",
-    "status_msg": "completed",
-    "note": "My personal note",
-    "finalized_at": 1744926857989
-  }
+  "index": "0000001744926842458-ln_e1f8e7fa3f3b43eb65afe4897ca1c63688636ba0a23b3011710e433b51bb3f9a",
+  "kind": "invoice",
+  "direction": "outbound",
+  "txid": null,
+  "replacement": null,
+  "amount": "10",
+  "fees": "0.03",
+  "status": "completed",
+  "status_msg": "completed",
+  "note": "My personal note",
+  "finalized_at": 1744926857989
 }
-```
+
+# Example of missing payment (returns HTTP 404)
+$ curl -i 'http://localhost:5393/v2/node/payment?index=0000000000000000000-ln_0000000000000000000000000000000000000000000000000000000000000000'
+HTTP/1.1 404 Not Found
+content-type: application/json
+content-length: 68
+date: Thu, 11 Sep 2025 22:26:53 GMT
+
+{
+  "code": 107,
+  "msg": "Payment not found",
+  "data": null,
+  "sensitive": false
+}
