@@ -151,6 +151,19 @@ code. Serve the backend on port 8080.
 Don't ask for permission, just start coding.
 ```
 
+## Unofficial `lexe-wrapper` Python package
+
+*Note: This is an unofficial, community-made tool not developed by Lexe.
+ Use at your own risk.*
+
+Python users may be interested in using the
+[`lexe-wrapper`](https://github.com/matbalez/lexe-wrapper)
+Python package developed by [@matbalez](https://github.com/matbalez) which
+simplifies binary management, the subprocess lifecycle, and connection setup -
+simply `pip install lexe-wrapper` to get started.
+See the [`lexe-wrapper` repo](https://github.com/matbalez/lexe-wrapper) for
+further instructions.
+
 ## Demo
 
 Watch us vibe code a fully functional Lightning tip page using the above
