@@ -385,11 +385,12 @@ The response includes the payment details.
 If the payment is not found, the endpoint returns HTTP 404.
 
 - `index`: Identifier for this payment.
-- `kind`: The payment type: ["onchain", "invoice", "offer", "spontaneous"].
-- `direction`: The payment direction: ["inbound", "outbound"].
+- `rail`: The technical payment mechanism: `"onchain"`, `"invoice"`, `"offer"`, `"spontaneous"`.
+- `kind`: The application-level payment kind, e.g. `"onchain"`, `"invoice"`, `"offer"`, `"spontaneous"`, `"waived_channel_fee"`, `"waived_liquidity_fee"`.
+- `direction`: The payment direction: `"inbound"`, `"outbound"`, or `"info"`.
 - `txid`: (Onchain payments only) The txid of the on-chain payment.
 - `replacement`: (Onchain payments only) The hex-encoded txid of the transaction that spent the outputs spent by this on-chain payment, if one exists.
-- `status`: The status of this payment: ["pending", "completed", "failed"].
+- `status`: The status of this payment: `"pending"`, `"completed"`, `"failed"`.
 - `status_msg`: The payment status as a human-readable message. These strings are customized per payment type, e.g. "invoice generated", "timed out".
 - `finalized_at`: If this payment is finalized, meaning it is "completed" or "failed", this is the time it was finalized, in milliseconds since the UNIX epoch.
 
@@ -400,6 +401,7 @@ $ curl 'http://localhost:5393/v2/node/payment?index=0000001744926519917-ln_9be5e
      | jq .
 {
   "index": "0000001744926519917-ln_9be5e4e3a0356cc4a7a1dce5a4af39e2896b7eb7b007ec6ca8c2f8434f21a63a",
+  "rail": "invoice",
   "kind": "invoice",
   "direction": "inbound",
   "txid": null,
@@ -415,6 +417,7 @@ $ curl 'http://localhost:5393/v2/node/payment?index=0000001744926842458-ln_e1f8e
     | jq .
 {
   "index": "0000001744926842458-ln_e1f8e7fa3f3b43eb65afe4897ca1c63688636ba0a23b3011710e433b51bb3f9a",
+  "rail": "invoice",
   "kind": "invoice",
   "direction": "outbound",
   "txid": null,
