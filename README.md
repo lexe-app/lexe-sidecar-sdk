@@ -55,21 +55,38 @@ client credentials from the app:
 1. Open the Lexe app > Menu sidebar > "SDK clients" > "Create new client"
 2. Copy the client credentials string
 
-Go to your project directory and create your local `.env` from Lexe's example:
+The sidecar supports two ways to provide credentials:
+
+**Option 1: Default credentials via env (single-wallet use)**
+
+Set `LEXE_CLIENT_CREDENTIALS` in your environment or in a `.env` file:
 
 ```bash
+# Option 1A: Set directly in environment
+$ export LEXE_CLIENT_CREDENTIALS="eyJsZXhlX2F1dGhfdG9rZ...TA0In0"
+
+# Option 1B: Use a .env file which the sidecar loads automatically
 $ git clone https://github.com/lexe-app/lexe-sidecar-sdk.git
 $ cd myproject
 $ cp ../lexe-sidecar-sdk/.env.example ./.env
 $ chmod 600 .env
+# Then edit .env and set LEXE_CLIENT_CREDENTIALS
 ```
 
-Set `LEXE_CLIENT_CREDENTIALS` in `.env` to the client credentials string from
-your Lexe app.
+**Option 2: Per-request `Authorization` header (multi-wallet use)**
+
+Alternatively, you can pass credentials per-request via the `Authorization`
+header, with the value formatted as `Bearer <credentials>`.
+This is useful for multi-wallet scenarios where different requests control
+different Lexe wallets.
 
 ```bash
-LEXE_CLIENT_CREDENTIALS="eyJsZXhlX2F1dGhfdG9rZ...TA0In0="
+$ curl http://localhost:5393/v2/node/node_info \
+    -H "Authorization: Bearer eyJsZXhlX2F1dGhfdG9rZ...TA0In0"
 ```
+
+If both default credentials (env) and per-request credentials (auth header) are
+provided, the per-request credentials take precedence.
 
 ### Get the `lexe-sidecar` binary
 
@@ -207,6 +224,10 @@ to startup and sync if it hasn't received any requests in a while.
 
 Get the health status of the Lexe SDK sidecar. Returns HTTP 200 once the sidecar
 is running and ready to accept requests.
+
+**Response:**
+
+- `status`: `"ok"` if configuration is OK, otherwise a warning or error message.
 
 **Examples:**
 
