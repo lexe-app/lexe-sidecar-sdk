@@ -21,14 +21,20 @@ tokio = { version = "1", features = [
 ] }
 tracing = "0.1"
 
-# - Lexe currently uses rustls 0.22, but no `axum-server` version supports this.
-#   Use Lexe's `axum-server` fork which supports rustls@0.22.
-#   TODO(max): Update to rustls@0.23 so this can be removed
-# - Lexe needs access to `ProxyScheme` within `reqwest` to support Lexe's TLS
-#   scheme. Use Lexe's `reqwest` fork which exposes this.
-axum-server = "=0.6.0"
-reqwest = { version = "=0.12.1", default-features = false, features = ["http2", "rustls-tls-manual-roots"] }
+# Lexe needs access to `ProxyScheme` within `reqwest` to support Lexe's TLS
+# scheme. Use Lexe's `reqwest` fork which exposes this.
+reqwest = { version = "=0.12.24", default-features = false, features = ["http2", "rustls-tls-manual-roots"] }
 
 [patch.crates-io]
-axum-server = { git = "https://github.com/lexe-app/axum-server", branch = "lexe-v0.6.0-2024_10_11" }
-reqwest = { git = "https://github.com/lexe-app/reqwest", branch = "lexe-v0.12.1-2024_10_11" }
+# These SGX patches point to Fortanix's upstream master, which has newer
+# versions (e.g. aesm-client 0.6.2) that haven't been published to crates.io
+# yet. These can be removed once Fortanix publishes the new versions.
+# Tracking: https://github.com/fortanix/rust-sgx/issues/851
+aesm-client = { git = "https://github.com/fortanix/rust-sgx" }
+dcap-ql = { git = "https://github.com/fortanix/rust-sgx" }
+sgx-isa = { git = "https://github.com/fortanix/rust-sgx" }
+
+# Lexe forks with needed functionality and compatibility fixes
+axum-server = { git = "https://github.com/lexe-app/axum-server", branch = "lexe-v0.7.3-2025_12_04" }
+reqwest = { git = "https://github.com/lexe-app/reqwest", branch = "lexe-v0.12.24-2025_12_04" }
+tokio = { git = "https://github.com/lexe-app/tokio", branch = "lexe-v1.36.0-2024_10_11" }

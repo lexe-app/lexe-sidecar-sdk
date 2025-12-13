@@ -6,8 +6,8 @@ use lexe_sidecar::{
     client::SidecarClient,
     def::UserSidecarApi,
     lexe::{
-        self, app::client::ClientCredentials, common::notify_once::NotifyOnce,
-        sdk_core::def::SdkApi,
+        self, lexe_tokio::notify_once::NotifyOnce,
+        node_client::credentials::ClientCredentials, sdk_core::def::SdkApi,
     },
     run::Sidecar,
     serde_json,
