@@ -104,6 +104,7 @@ fn init_server(
 
     // Spawn the sidecar off into a task. You could also just `.await` on it:
     // `sidecar.run(spawn_ctrlc_handler).await`.
+    #[allow(clippy::disallowed_methods)] // LxTask is internal to Lexe
     let sidecar_task = tokio::task::spawn(sidecar.run(spawn_ctrlc_handler));
 
     info!("Sidecar server initialized; running at {sidecar_url}");
