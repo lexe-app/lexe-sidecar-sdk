@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+env:
+  RUST_BACKTRACE: short
+  RUSTFLAGS: -D warnings
+  CARGO_TERM_COLOR: always
+  LEXE_RUST_FMT_VERSION: nightly-2025-10-16
+
+jobs:
+  clippy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo clippy --manifest-path rust-example/Cargo.toml --all-targets -- -D warnings
+
+  fmt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup install ${{ env.LEXE_RUST_FMT_VERSION }} --profile minimal --component rustfmt
+      - run: rustup run ${{ env.LEXE_RUST_FMT_VERSION }} cargo fmt --manifest-path rust-example/Cargo.toml -- --check
