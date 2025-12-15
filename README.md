@@ -22,7 +22,7 @@ This repo contains public-facing docs for the Lexe Sidecar SDK.
 The `lexe-sidecar` source code can be found in the Lexe monorepo at:
 <https://github.com/lexe-app/lexe-public/tree/master/sdk-sidecar>
 
-## Quickstart
+# Quickstart
 
 ### Download the Lexe Wallet app
 
@@ -97,7 +97,7 @@ and manages the connection to your Lexe node.
 There are two main ways to get the `lexe-sidecar` binary:
 
 1) (Easy) Download a precompiled binary from the [Releases](https://github.com/lexe-app/lexe-sidecar-sdk/releases) page
-2) Build the binary from Rust source: see [BUILD.md](BUILD.md) for instructions.
+2) Build the binary from Rust source: see [BUILD.md](https://github.com/lexe-app/lexe-sidecar-sdk/blob/master/BUILD.md) for instructions.
 
 #### Using the `lexe-sidecar` as a Rust library
 
@@ -107,8 +107,8 @@ library, which provides:
 - A `Sidecar` webserver which can be `.run()` within your async Rust app.
 - A `SidecarClient` which fully implements the sidecar API.
 
-See [example-rust](example-rust) for an example which implements both a sidecar
-client and server.
+See [example-rust](https://github.com/lexe-app/lexe-sidecar-sdk/tree/master/example-rust)
+for an example which implements both a sidecar client and server.
 
 Download the `lexe-sidecar` binary to your machine and run it from your project
 directory which contains the `.env` file:
@@ -189,12 +189,9 @@ prompt in less than 3 minutes:
 
 [Watch video](https://youtu.be/svGZW7IrK9M)
 
-[![Watch the demo](demo-thumbnail.jpg)](https://youtu.be/svGZW7IrK9M)
+[![Watch the video](https://img.youtube.com/vi/svGZW7IrK9M/0.jpg)](https://www.youtube.com/watch?v=svGZW7IrK9M)
 
-<!-- TODO(max): This should work too, but video is uploading rn -->
-<!-- [![Watch the video](https://img.youtube.com/vi/svGZW7IrK9M/0.jpg)](https://www.youtube.com/watch?v=svGZW7IrK9M) -->
-
-## REST API Reference
+# REST API Reference
 
 The Lexe SDK sidecar exposes the following REST API endpoints:
 
