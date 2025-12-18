@@ -21,20 +21,21 @@ tokio = { version = "1", features = [
 ] }
 tracing = "0.1"
 
-# Lexe needs access to `ProxyScheme` within `reqwest` to support Lexe's TLS
-# scheme. Use Lexe's `reqwest` fork which exposes this.
-reqwest = { version = "=0.12.24", default-features = false, features = ["http2", "rustls-tls-manual-roots"] }
-
 [patch.crates-io]
 # These SGX patches point to Fortanix's upstream master, which has newer
 # versions (e.g. aesm-client 0.6.2) that haven't been published to crates.io
 # yet. These can be removed once Fortanix publishes the new versions.
+#
 # Tracking: https://github.com/fortanix/rust-sgx/issues/851
-aesm-client = { git = "https://github.com/fortanix/rust-sgx" }
-dcap-ql = { git = "https://github.com/fortanix/rust-sgx" }
-sgx-isa = { git = "https://github.com/fortanix/rust-sgx" }
+#
+# TODO(phlip9): Relax our patched crate version requirements so we can remove
+# these patches
+aesm-client = { git = "https://github.com/lexe-app/rust-sgx", branch = "lexe-67ae4d2-2025_12_02" }
+dcap-ql = { git = "https://github.com/lexe-app/rust-sgx", branch = "lexe-67ae4d2-2025_12_02" }
+sgx-isa = { git = "https://github.com/lexe-app/rust-sgx", branch = "lexe-67ae4d2-2025_12_02" }
 
 # Lexe forks with needed functionality and compatibility fixes
 axum-server = { git = "https://github.com/lexe-app/axum-server", branch = "lexe-v0.7.3-2025_12_04" }
+# TODO(phlip9): remove this once lexe-public gets updated
 reqwest = { git = "https://github.com/lexe-app/reqwest", branch = "lexe-v0.12.24-2025_12_04" }
 tokio = { git = "https://github.com/lexe-app/tokio", branch = "lexe-v1.36.0-2024_10_11" }
