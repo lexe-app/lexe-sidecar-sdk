@@ -20,22 +20,3 @@ tokio = { version = "1", features = [
     "rt-multi-thread",
 ] }
 tracing = "0.1"
-
-[patch.crates-io]
-# These SGX patches point to Fortanix's upstream master, which has newer
-# versions (e.g. aesm-client 0.6.2) that haven't been published to crates.io
-# yet. These can be removed once Fortanix publishes the new versions.
-#
-# Tracking: https://github.com/fortanix/rust-sgx/issues/851
-#
-# TODO(phlip9): Relax our patched crate version requirements so we can remove
-# these patches
-aesm-client = { git = "https://github.com/lexe-app/rust-sgx", branch = "lexe-b23e3383-2025_12_18" }
-dcap-ql = { git = "https://github.com/lexe-app/rust-sgx", branch = "lexe-b23e3383-2025_12_18" }
-sgx-isa = { git = "https://github.com/lexe-app/rust-sgx", branch = "lexe-b23e3383-2025_12_18" }
-
-# Lexe forks with needed functionality and compatibility fixes
-axum-server = { git = "https://github.com/lexe-app/axum-server", branch = "lexe-v0.7.3-2025_12_04" }
-# TODO(phlip9): remove this once lexe-public gets updated
-reqwest = { git = "https://github.com/lexe-app/reqwest", branch = "lexe-v0.12.24-2025_12_04" }
-tokio = { git = "https://github.com/lexe-app/tokio", branch = "lexe-v1.36.0-2024_10_11" }
