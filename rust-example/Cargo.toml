@@ -30,9 +30,9 @@ tracing = "0.1"
 #
 # TODO(phlip9): Relax our patched crate version requirements so we can remove
 # these patches
-aesm-client = { git = "https://github.com/lexe-app/rust-sgx", branch = "lexe-67ae4d2-2025_12_02" }
-dcap-ql = { git = "https://github.com/lexe-app/rust-sgx", branch = "lexe-67ae4d2-2025_12_02" }
-sgx-isa = { git = "https://github.com/lexe-app/rust-sgx", branch = "lexe-67ae4d2-2025_12_02" }
+aesm-client = { git = "https://github.com/lexe-app/rust-sgx", branch = "lexe-b23e3383-2025_12_18" }
+dcap-ql = { git = "https://github.com/lexe-app/rust-sgx", branch = "lexe-b23e3383-2025_12_18" }
+sgx-isa = { git = "https://github.com/lexe-app/rust-sgx", branch = "lexe-b23e3383-2025_12_18" }
 
 # Lexe forks with needed functionality and compatibility fixes
 axum-server = { git = "https://github.com/lexe-app/axum-server", branch = "lexe-v0.7.3-2025_12_04" }
