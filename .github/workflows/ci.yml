@@ -4,6 +4,8 @@ on:
   push:
     branches: [master]
   pull_request:
+    # Include ready_for_review to trigger CI when draft PR is marked ready
+    types: [opened, synchronize, reopened, ready_for_review]
 
 env:
   RUST_BACKTRACE: short
@@ -13,6 +15,7 @@ env:
 
 jobs:
   clippy:
+    if: github.event_name == 'push' || github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -20,6 +23,7 @@ jobs:
       - run: cargo clippy --manifest-path rust-example/Cargo.toml --all-targets -- -D warnings
 
   fmt:
+    if: github.event_name == 'push' || github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
