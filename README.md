@@ -1,7 +1,5 @@
 # Lexe Sidecar SDK
 
-## Overview
-
 The Lexe Sidecar SDK presents a simple JSON API for developers to control their
 self-custodial, always-online [Lexe](https://lexe.app) node which can send and receive
 payments over the Lightning Network. Running the `lexe-sidecar` binary spins up
