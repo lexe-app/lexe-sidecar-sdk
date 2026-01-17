@@ -86,18 +86,40 @@ $ curl http://localhost:5393/v2/node/node_info \
 If both default credentials (env) and per-request credentials (auth header) are
 provided, the per-request credentials take precedence.
 
-### Get the `lexe-sidecar` binary
+### Install the `lexe-sidecar` binary
 
 The Lexe Sidecar SDK is distributed as a single self-contained binary called
-`lexe-sidecar`. It runs a local stateless webserver that accepts HTTP requests
+`lexe-sidecar`.
+It runs a local stateless webserver that accepts HTTP requests
 and manages the connection to your Lexe node.
 
-There are two main ways to get the `lexe-sidecar` binary:
+**Official install script**
 
-1) (Easy) Download a precompiled binary from the [Releases](https://github.com/lexe-app/lexe-sidecar-sdk/releases) page
-2) Build the binary from Rust source: see [BUILD.md](https://github.com/lexe-app/lexe-sidecar-sdk/blob/master/BUILD.md) for instructions.
+The easiest way to install `lexe-sidecar` is using the official install script:
 
-#### Using the `lexe-sidecar` as a Rust library
+```bash
+curl -fsSL https://raw.githubusercontent.com/lexe-app/lexe-sidecar-sdk/master/install.sh | sh
+```
+
+This will install the `lexe-sidecar` binary at `~/.local/bin` and add it to your
+`PATH`.
+To use the sidecar in your current shell, you may need to run:
+
+```bash
+# For sh/bash/zsh
+source ~/.local/bin/env
+# For fish
+source ~/.local/bin/env.fish
+```
+
+**Alternative installation methods**
+
+If you prefer manual installation or need to build from source:
+
+1. Download a precompiled binary from the [Releases](https://github.com/lexe-app/lexe-sidecar-sdk/releases) page
+2. Build the binary from Rust source: see [BUILD.md](https://github.com/lexe-app/lexe-sidecar-sdk/blob/master/BUILD.md) for instructions
+
+**Using the `lexe-sidecar` as a Rust library**
 
 If you're working in Rust, you may also use the `lexe-sidecar` as a Rust
 library, which provides:
@@ -108,8 +130,15 @@ library, which provides:
 See [example-rust](https://github.com/lexe-app/lexe-sidecar-sdk/tree/master/example-rust)
 for an example which implements both a sidecar client and server.
 
-Download the `lexe-sidecar` binary to your machine and run it from your project
-directory which contains the `.env` file:
+### Run the sidecar
+
+Run the sidecar from your project directory which contains the `.env` file:
+
+```bash
+$ lexe-sidecar
+```
+
+Or if you downloaded the binary manually:
 
 ```bash
 # Assumes the binary was downloaded to ./bin/lexe-sidecar
