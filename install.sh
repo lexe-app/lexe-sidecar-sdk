@@ -1,5 +1,6 @@
 #!/bin/sh
 # shellcheck shell=dash
+# shellcheck disable=SC2001  # sed is more portable than ${var//pattern/replace}
 # shellcheck disable=SC2039  # local is non-POSIX
 #
 # Licensed under the MIT license
@@ -28,54 +29,47 @@ has_local 2> /dev/null || alias local=typeset
 
 set -u
 
-APP_NAME="uv"
-APP_VERSION="0.9.26"
+APP_NAME="lexe-sidecar"
+APP_VERSION="latest"
 # Look for GitHub Enterprise-style base URL first
-if [ -n "${UV_INSTALLER_GHE_BASE_URL:-}" ]; then
-  INSTALLER_BASE_URL="$UV_INSTALLER_GHE_BASE_URL"
+if [ -n "${LEXE_SIDECAR_INSTALLER_GHE_BASE_URL:-}" ]; then
+  INSTALLER_BASE_URL="$LEXE_SIDECAR_INSTALLER_GHE_BASE_URL"
 else
-  INSTALLER_BASE_URL="${UV_INSTALLER_GITHUB_BASE_URL:-https://github.com}"
+  INSTALLER_BASE_URL="${LEXE_SIDECAR_INSTALLER_GITHUB_BASE_URL:-https://github.com}"
 fi
-if [ -n "${UV_DOWNLOAD_URL:-}" ]; then
-  ARTIFACT_DOWNLOAD_URL="$UV_DOWNLOAD_URL"
+if [ -n "${LEXE_SIDECAR_DOWNLOAD_URL:-}" ]; then
+  ARTIFACT_DOWNLOAD_URL="$LEXE_SIDECAR_DOWNLOAD_URL"
 elif [ -n "${INSTALLER_DOWNLOAD_URL:-}" ]; then
   ARTIFACT_DOWNLOAD_URL="$INSTALLER_DOWNLOAD_URL"
 else
-  ARTIFACT_DOWNLOAD_URL="${INSTALLER_BASE_URL}/astral-sh/uv/releases/download/0.9.26"
+  ARTIFACT_DOWNLOAD_URL="${INSTALLER_BASE_URL}/lexe-app/lexe-sidecar-sdk/releases/latest/download"
 fi
-if [ -n "${UV_PRINT_VERBOSE:-}" ]; then
-  PRINT_VERBOSE="$UV_PRINT_VERBOSE"
+if [ -n "${LEXE_SIDECAR_PRINT_VERBOSE:-}" ]; then
+  PRINT_VERBOSE="$LEXE_SIDECAR_PRINT_VERBOSE"
 else
   PRINT_VERBOSE=${INSTALLER_PRINT_VERBOSE:-0}
 fi
-if [ -n "${UV_PRINT_QUIET:-}" ]; then
-  PRINT_QUIET="$UV_PRINT_QUIET"
+if [ -n "${LEXE_SIDECAR_PRINT_QUIET:-}" ]; then
+  PRINT_QUIET="$LEXE_SIDECAR_PRINT_QUIET"
 else
   PRINT_QUIET=${INSTALLER_PRINT_QUIET:-0}
 fi
-if [ -n "${UV_NO_MODIFY_PATH:-}" ]; then
-  NO_MODIFY_PATH="$UV_NO_MODIFY_PATH"
+if [ -n "${LEXE_SIDECAR_NO_MODIFY_PATH:-}" ]; then
+  NO_MODIFY_PATH="$LEXE_SIDECAR_NO_MODIFY_PATH"
 else
   NO_MODIFY_PATH=${INSTALLER_NO_MODIFY_PATH:-0}
 fi
-if [ "${UV_DISABLE_UPDATE:-0}" = "1" ]; then
-  INSTALL_UPDATER=0
-else
-  INSTALL_UPDATER=1
-fi
-UNMANAGED_INSTALL="${UV_UNMANAGED_INSTALL:-}"
+UNMANAGED_INSTALL="${LEXE_SIDECAR_UNMANAGED_INSTALL:-}"
 if [ -n "${UNMANAGED_INSTALL}" ]; then
   NO_MODIFY_PATH=1
-  INSTALL_UPDATER=0
 fi
-AUTH_TOKEN="${UV_GITHUB_TOKEN:-}"
+AUTH_TOKEN="${LEXE_SIDECAR_GITHUB_TOKEN:-}"
 
 read -r RECEIPT << EORECEIPT
-{"binaries":["CARGO_DIST_BINS"],"binary_aliases":{},"cdylibs":["CARGO_DIST_DYLIBS"],"cstaticlibs":["CARGO_DIST_STATICLIBS"],"install_layout":"unspecified","install_prefix":"AXO_INSTALL_PREFIX","modify_path":true,"provider":{"source":"cargo-dist","version":"0.30.2"},"source":{"app_name":"uv","name":"uv","owner":"astral-sh","release_type":"github"},"version":"0.9.26"}
+{"binaries":["CARGO_DIST_BINS"],"binary_aliases":{},"cdylibs":["CARGO_DIST_DYLIBS"],"cstaticlibs":["CARGO_DIST_STATICLIBS"],"install_layout":"unspecified","install_prefix":"AXO_INSTALL_PREFIX","modify_path":true,"provider":{"source":"cargo-dist","version":"0.30.2"},"source":{"app_name":"lexe-sidecar","name":"lexe-sidecar","owner":"lexe-app","release_type":"github"},"version":"latest"}
 EORECEIPT
 
 # Some Linux distributions don't set HOME
-# https://github.com/astral-sh/uv/issues/6965#issuecomment-2915796022
 get_home() {
   if [ -n "${HOME:-}" ]; then
     echo "$HOME"
@@ -99,17 +93,16 @@ get_home_expression() {
 INFERRED_HOME=$(get_home)
 # shellcheck disable=SC2034
 INFERRED_HOME_EXPRESSION=$(get_home_expression)
-RECEIPT_HOME="${XDG_CONFIG_HOME:-$INFERRED_HOME/.config}/uv"
 
 usage() {
   # print help (this cat/EOF stuff is a "heredoc" string)
   cat << EOF
-uv-installer.sh
+lexe-sidecar-installer.sh
 
-The installer for uv 0.9.26
+The installer for lexe-sidecar
 
 This script detects what platform you're on and fetches an appropriate archive from
-https://github.com/astral-sh/uv/releases/download/0.9.26
+https://github.com/lexe-app/lexe-sidecar-sdk/releases/latest/download
 then unpacks the binaries and installs them to the first of the following locations
 
     \$XDG_BIN_HOME
@@ -119,7 +112,7 @@ then unpacks the binaries and installs them to the first of the following locati
 It will then add that dir to PATH by adding the appropriate line to your shell profiles.
 
 USAGE:
-    uv-installer.sh [OPTIONS]
+    lexe-sidecar-installer.sh [OPTIONS]
 
 OPTIONS:
     -v, --verbose
@@ -128,11 +121,15 @@ OPTIONS:
     -q, --quiet
             Disable progress output
 
-        --no-modify-path
-            Don't configure the PATH environment variable
-
     -h, --help
             Print help information
+
+ENVIRONMENT VARIABLES:
+    LEXE_SIDECAR_INSTALL_DIR
+            Override the installation directory
+
+    LEXE_SIDECAR_NO_MODIFY_PATH
+            Set to 1 to skip PATH configuration
 EOF
 }
 
@@ -158,10 +155,6 @@ download_binary_and_run_installer() {
       ;;
     --verbose)
       PRINT_VERBOSE=1
-      ;;
-    --no-modify-path)
-      say "--no-modify-path has been deprecated; please set UV_NO_MODIFY_PATH=1 in the environment"
-      NO_MODIFY_PATH=1
       ;;
     *)
       OPTIND=1
@@ -209,23 +202,11 @@ download_binary_and_run_installer() {
 
   # destructure selected archive info into locals
   case "$_artifact_name" in
-  "uv-aarch64-apple-darwin.tar.gz")
+  "lexe-sidecar-macos-aarch64.zip")
     _arch="aarch64-apple-darwin"
-    _zip_ext=".tar.gz"
-    _bins="uv uvx"
-    _bins_js_array='"uv","uvx"'
-    _libs=""
-    _libs_js_array=""
-    _staticlibs=""
-    _staticlibs_js_array=""
-    _updater_name=""
-    _updater_bin=""
-    ;;
-  "uv-aarch64-pc-windows-msvc.zip")
-    _arch="aarch64-pc-windows-msvc"
     _zip_ext=".zip"
-    _bins="uv.exe uvx.exe uvw.exe"
-    _bins_js_array='"uv.exe","uvx.exe","uvw.exe"'
+    _bins="lexe-sidecar"
+    _bins_js_array='"lexe-sidecar"'
     _libs=""
     _libs_js_array=""
     _staticlibs=""
@@ -233,71 +214,11 @@ download_binary_and_run_installer() {
     _updater_name=""
     _updater_bin=""
     ;;
-  "uv-aarch64-unknown-linux-gnu.tar.gz")
+  "lexe-sidecar-linux-aarch64.zip")
     _arch="aarch64-unknown-linux-gnu"
-    _zip_ext=".tar.gz"
-    _bins="uv uvx"
-    _bins_js_array='"uv","uvx"'
-    _libs=""
-    _libs_js_array=""
-    _staticlibs=""
-    _staticlibs_js_array=""
-    _updater_name=""
-    _updater_bin=""
-    ;;
-  "uv-aarch64-unknown-linux-musl.tar.gz")
-    _arch="aarch64-unknown-linux-musl-static"
-    _zip_ext=".tar.gz"
-    _bins="uv uvx"
-    _bins_js_array='"uv","uvx"'
-    _libs=""
-    _libs_js_array=""
-    _staticlibs=""
-    _staticlibs_js_array=""
-    _updater_name=""
-    _updater_bin=""
-    ;;
-  "uv-arm-unknown-linux-musleabihf.tar.gz")
-    _arch="arm-unknown-linux-musl-staticeabihf"
-    _zip_ext=".tar.gz"
-    _bins="uv uvx"
-    _bins_js_array='"uv","uvx"'
-    _libs=""
-    _libs_js_array=""
-    _staticlibs=""
-    _staticlibs_js_array=""
-    _updater_name=""
-    _updater_bin=""
-    ;;
-  "uv-armv7-unknown-linux-gnueabihf.tar.gz")
-    _arch="armv7-unknown-linux-gnueabihf"
-    _zip_ext=".tar.gz"
-    _bins="uv uvx"
-    _bins_js_array='"uv","uvx"'
-    _libs=""
-    _libs_js_array=""
-    _staticlibs=""
-    _staticlibs_js_array=""
-    _updater_name=""
-    _updater_bin=""
-    ;;
-  "uv-armv7-unknown-linux-musleabihf.tar.gz")
-    _arch="armv7-unknown-linux-musl-staticeabihf"
-    _zip_ext=".tar.gz"
-    _bins="uv uvx"
-    _bins_js_array='"uv","uvx"'
-    _libs=""
-    _libs_js_array=""
-    _staticlibs=""
-    _staticlibs_js_array=""
-    _updater_name=""
-    _updater_bin=""
-    ;;
-  "uv-i686-pc-windows-msvc.zip")
-    _arch="i686-pc-windows-msvc"
     _zip_ext=".zip"
-    _bins="uv.exe uvx.exe uvw.exe"
-    _bins_js_array='"uv.exe","uvx.exe","uvw.exe"'
+    _bins="lexe-sidecar"
+    _bins_js_array='"lexe-sidecar"'
     _libs=""
     _libs_js_array=""
     _staticlibs=""
@@ -305,11 +226,11 @@ download_binary_and_run_installer() {
     _updater_name=""
     _updater_bin=""
     ;;
-  "uv-i686-unknown-linux-gnu.tar.gz")
-    _arch="i686-unknown-linux-gnu"
-    _zip_ext=".tar.gz"
-    _bins="uv uvx"
-    _bins_js_array='"uv","uvx"'
+  "lexe-sidecar-linux-x86_64.zip")
+    _arch="x86_64-unknown-linux-gnu"
+    _zip_ext=".zip"
+    _bins="lexe-sidecar"
+    _bins_js_array='"lexe-sidecar"'
     _libs=""
     _libs_js_array=""
     _staticlibs=""
@@ -317,107 +238,11 @@ download_binary_and_run_installer() {
     _updater_name=""
     _updater_bin=""
     ;;
-  "uv-i686-unknown-linux-musl.tar.gz")
-    _arch="i686-unknown-linux-musl-static"
-    _zip_ext=".tar.gz"
-    _bins="uv uvx"
-    _bins_js_array='"uv","uvx"'
-    _libs=""
-    _libs_js_array=""
-    _staticlibs=""
-    _staticlibs_js_array=""
-    _updater_name=""
-    _updater_bin=""
-    ;;
-  "uv-powerpc64-unknown-linux-gnu.tar.gz")
-    _arch="powerpc64-unknown-linux-gnu"
-    _zip_ext=".tar.gz"
-    _bins="uv uvx"
-    _bins_js_array='"uv","uvx"'
-    _libs=""
-    _libs_js_array=""
-    _staticlibs=""
-    _staticlibs_js_array=""
-    _updater_name=""
-    _updater_bin=""
-    ;;
-  "uv-powerpc64le-unknown-linux-gnu.tar.gz")
-    _arch="powerpc64le-unknown-linux-gnu"
-    _zip_ext=".tar.gz"
-    _bins="uv uvx"
-    _bins_js_array='"uv","uvx"'
-    _libs=""
-    _libs_js_array=""
-    _staticlibs=""
-    _staticlibs_js_array=""
-    _updater_name=""
-    _updater_bin=""
-    ;;
-  "uv-riscv64gc-unknown-linux-gnu.tar.gz")
-    _arch="riscv64gc-unknown-linux-gnu"
-    _zip_ext=".tar.gz"
-    _bins="uv uvx"
-    _bins_js_array='"uv","uvx"'
-    _libs=""
-    _libs_js_array=""
-    _staticlibs=""
-    _staticlibs_js_array=""
-    _updater_name=""
-    _updater_bin=""
-    ;;
-  "uv-s390x-unknown-linux-gnu.tar.gz")
-    _arch="s390x-unknown-linux-gnu"
-    _zip_ext=".tar.gz"
-    _bins="uv uvx"
-    _bins_js_array='"uv","uvx"'
-    _libs=""
-    _libs_js_array=""
-    _staticlibs=""
-    _staticlibs_js_array=""
-    _updater_name=""
-    _updater_bin=""
-    ;;
-  "uv-x86_64-apple-darwin.tar.gz")
-    _arch="x86_64-apple-darwin"
-    _zip_ext=".tar.gz"
-    _bins="uv uvx"
-    _bins_js_array='"uv","uvx"'
-    _libs=""
-    _libs_js_array=""
-    _staticlibs=""
-    _staticlibs_js_array=""
-    _updater_name=""
-    _updater_bin=""
-    ;;
-  "uv-x86_64-pc-windows-msvc.zip")
+  "lexe-sidecar-windows-x86_64.zip")
     _arch="x86_64-pc-windows-msvc"
     _zip_ext=".zip"
-    _bins="uv.exe uvx.exe uvw.exe"
-    _bins_js_array='"uv.exe","uvx.exe","uvw.exe"'
-    _libs=""
-    _libs_js_array=""
-    _staticlibs=""
-    _staticlibs_js_array=""
-    _updater_name=""
-    _updater_bin=""
-    ;;
-  "uv-x86_64-unknown-linux-gnu.tar.gz")
-    _arch="x86_64-unknown-linux-gnu"
-    _zip_ext=".tar.gz"
-    _bins="uv uvx"
-    _bins_js_array='"uv","uvx"'
-    _libs=""
-    _libs_js_array=""
-    _staticlibs=""
-    _staticlibs_js_array=""
-    _updater_name=""
-    _updater_bin=""
-    ;;
-  "uv-x86_64-unknown-linux-musl.tar.gz")
-    _arch="x86_64-unknown-linux-musl-static"
-    _zip_ext=".tar.gz"
-    _bins="uv uvx"
-    _bins_js_array='"uv","uvx"'
+    _bins="lexe-sidecar.exe"
+    _bins_js_array='"lexe-sidecar.exe"'
     _libs=""
     _libs_js_array=""
     _staticlibs=""
@@ -461,25 +286,6 @@ download_binary_and_run_installer() {
     say "no checksums to verify"
   fi
 
-  # ...and then the updater, if it exists
-  if [ -n "$_updater_name" ] && [ "$INSTALL_UPDATER" = "1" ]; then
-    local _updater_url="$ARTIFACT_DOWNLOAD_URL/$_updater_name"
-    # This renames the artifact while doing the download, removing the
-    # target triple and leaving just the appname-update format
-    local _updater_file="$_dir/$APP_NAME-update"
-
-    if ! downloader "$_updater_url" "$_updater_file"; then
-      say "failed to download $_updater_url"
-      say "this may be a standard network error, but it may also indicate"
-      say "that $APP_NAME's release process is not working. When in doubt"
-      say "please feel free to open an issue!"
-      exit 1
-    fi
-
-    # Add the updater to the list of binaries to install
-    _bins="$_bins $APP_NAME-update"
-  fi
-
   # unpack the archive
   case "$_zip_ext" in
   ".zip")
@@ -502,20 +308,7 @@ download_binary_and_run_installer() {
 
   ignore rm -rf "$_dir"
 
-  # Install the install receipt
-  if [ "$INSTALL_UPDATER" = "1" ]; then
-    if ! mkdir -p "$RECEIPT_HOME"; then
-      err "unable to create receipt directory at $RECEIPT_HOME"
-    else
-      echo "$RECEIPT" > "$RECEIPT_HOME/$APP_NAME-receipt.json"
-      # shellcheck disable=SC2320
-      local _retval=$?
-    fi
-  else
-    local _retval=0
-  fi
-
-  return "$_retval"
+  return 0
 }
 
 # Replaces $HOME with the variable name for display to the user,
@@ -537,73 +330,13 @@ json_binary_aliases() {
   "aarch64-apple-darwin")
     echo '{}'
     ;;
-  "aarch64-pc-windows-gnu")
-    echo '{}'
-    ;;
   "aarch64-unknown-linux-gnu")
     echo '{}'
     ;;
-  "aarch64-unknown-linux-musl-dynamic")
-    echo '{}'
-    ;;
-  "aarch64-unknown-linux-musl-static")
-    echo '{}'
-    ;;
-  "arm-unknown-linux-gnueabihf")
-    echo '{}'
-    ;;
-  "arm-unknown-linux-musl-dynamiceabihf")
-    echo '{}'
-    ;;
-  "arm-unknown-linux-musl-staticeabihf")
-    echo '{}'
-    ;;
-  "armv7-unknown-linux-gnueabihf")
-    echo '{}'
-    ;;
-  "armv7-unknown-linux-musl-dynamiceabihf")
-    echo '{}'
-    ;;
-  "armv7-unknown-linux-musl-staticeabihf")
-    echo '{}'
-    ;;
-  "i686-pc-windows-gnu")
-    echo '{}'
-    ;;
-  "i686-unknown-linux-gnu")
-    echo '{}'
-    ;;
-  "i686-unknown-linux-musl-dynamic")
-    echo '{}'
-    ;;
-  "i686-unknown-linux-musl-static")
-    echo '{}'
-    ;;
-  "powerpc64-unknown-linux-gnu")
-    echo '{}'
-    ;;
-  "powerpc64le-unknown-linux-gnu")
-    echo '{}'
-    ;;
-  "riscv64gc-unknown-linux-gnu")
-    echo '{}'
-    ;;
-  "s390x-unknown-linux-gnu")
-    echo '{}'
-    ;;
-  "x86_64-apple-darwin")
-    echo '{}'
-    ;;
-  "x86_64-pc-windows-gnu")
+  "x86_64-pc-windows-msvc")
     echo '{}'
     ;;
   "x86_64-unknown-linux-gnu")
-    echo '{}'
-    ;;
-  "x86_64-unknown-linux-musl-dynamic")
-    echo '{}'
-    ;;
-  "x86_64-unknown-linux-musl-static")
     echo '{}'
     ;;
   *)
@@ -624,13 +357,6 @@ aliases_for_binary() {
       ;;
     esac
     ;;
-  "aarch64-pc-windows-gnu")
-    case "$_bin" in
-    *)
-      echo ""
-      ;;
-    esac
-    ;;
   "aarch64-unknown-linux-gnu")
     case "$_bin" in
     *)
@@ -638,126 +364,7 @@ aliases_for_binary() {
       ;;
     esac
     ;;
-  "aarch64-unknown-linux-musl-dynamic")
-    case "$_bin" in
-    *)
-      echo ""
-      ;;
-    esac
-    ;;
-  "aarch64-unknown-linux-musl-static")
-    case "$_bin" in
-    *)
-      echo ""
-      ;;
-    esac
-    ;;
-  "arm-unknown-linux-gnueabihf")
-    case "$_bin" in
-    *)
-      echo ""
-      ;;
-    esac
-    ;;
-  "arm-unknown-linux-musl-dynamiceabihf")
-    case "$_bin" in
-    *)
-      echo ""
-      ;;
-    esac
-    ;;
-  "arm-unknown-linux-musl-staticeabihf")
-    case "$_bin" in
-    *)
-      echo ""
-      ;;
-    esac
-    ;;
-  "armv7-unknown-linux-gnueabihf")
-    case "$_bin" in
-    *)
-      echo ""
-      ;;
-    esac
-    ;;
-  "armv7-unknown-linux-musl-dynamiceabihf")
-    case "$_bin" in
-    *)
-      echo ""
-      ;;
-    esac
-    ;;
-  "armv7-unknown-linux-musl-staticeabihf")
-    case "$_bin" in
-    *)
-      echo ""
-      ;;
-    esac
-    ;;
-  "i686-pc-windows-gnu")
-    case "$_bin" in
-    *)
-      echo ""
-      ;;
-    esac
-    ;;
-  "i686-unknown-linux-gnu")
-    case "$_bin" in
-    *)
-      echo ""
-      ;;
-    esac
-    ;;
-  "i686-unknown-linux-musl-dynamic")
-    case "$_bin" in
-    *)
-      echo ""
-      ;;
-    esac
-    ;;
-  "i686-unknown-linux-musl-static")
-    case "$_bin" in
-    *)
-      echo ""
-      ;;
-    esac
-    ;;
-  "powerpc64-unknown-linux-gnu")
-    case "$_bin" in
-    *)
-      echo ""
-      ;;
-    esac
-    ;;
-  "powerpc64le-unknown-linux-gnu")
-    case "$_bin" in
-    *)
-      echo ""
-      ;;
-    esac
-    ;;
-  "riscv64gc-unknown-linux-gnu")
-    case "$_bin" in
-    *)
-      echo ""
-      ;;
-    esac
-    ;;
-  "s390x-unknown-linux-gnu")
-    case "$_bin" in
-    *)
-      echo ""
-      ;;
-    esac
-    ;;
-  "x86_64-apple-darwin")
-    case "$_bin" in
-    *)
-      echo ""
-      ;;
-    esac
-    ;;
-  "x86_64-pc-windows-gnu")
+  "x86_64-pc-windows-msvc")
     case "$_bin" in
     *)
       echo ""
@@ -765,20 +372,6 @@ aliases_for_binary() {
     esac
     ;;
   "x86_64-unknown-linux-gnu")
-    case "$_bin" in
-    *)
-      echo ""
-      ;;
-    esac
-    ;;
-  "x86_64-unknown-linux-musl-dynamic")
-    case "$_bin" in
-    *)
-      echo ""
-      ;;
-    esac
-    ;;
-  "x86_64-unknown-linux-musl-static")
     case "$_bin" in
     *)
       echo ""
@@ -799,253 +392,63 @@ select_archive_for_arch() {
   # accepting the first one that matches, as it's the best match
   case "$_true_arch" in
   "aarch64-apple-darwin")
-    _archive="uv-aarch64-apple-darwin.tar.gz"
-    if [ -n "$_archive" ]; then
-      echo "$_archive"
-      return 0
-    fi
-    _archive="uv-x86_64-apple-darwin.tar.gz"
-    if [ -n "$_archive" ]; then
-      echo "$_archive"
-      return 0
-    fi
-    ;;
-  "aarch64-pc-windows-gnu")
-    _archive="uv-aarch64-pc-windows-msvc.zip"
-    if [ -n "$_archive" ]; then
-      echo "$_archive"
-      return 0
-    fi
-    ;;
-  "aarch64-pc-windows-msvc")
-    _archive="uv-aarch64-pc-windows-msvc.zip"
-    if [ -n "$_archive" ]; then
-      echo "$_archive"
-      return 0
-    fi
-    _archive="uv-x86_64-pc-windows-msvc.zip"
-    if [ -n "$_archive" ]; then
-      echo "$_archive"
-      return 0
-    fi
-    _archive="uv-i686-pc-windows-msvc.zip"
+    _archive="lexe-sidecar-macos-aarch64.zip"
     if [ -n "$_archive" ]; then
       echo "$_archive"
       return 0
     fi
     ;;
   "aarch64-unknown-linux-gnu")
-    _archive="uv-aarch64-unknown-linux-gnu.tar.gz"
-    if ! check_glibc "2" "28"; then
-      _archive=""
-    fi
-    if [ -n "$_archive" ]; then
-      echo "$_archive"
-      return 0
-    fi
-    _archive="uv-aarch64-unknown-linux-musl.tar.gz"
+    _archive="lexe-sidecar-linux-aarch64.zip"
     if [ -n "$_archive" ]; then
       echo "$_archive"
       return 0
     fi
     ;;
   "aarch64-unknown-linux-musl-dynamic")
-    _archive="uv-aarch64-unknown-linux-musl.tar.gz"
+    _archive="lexe-sidecar-linux-aarch64.zip"
     if [ -n "$_archive" ]; then
       echo "$_archive"
       return 0
     fi
     ;;
   "aarch64-unknown-linux-musl-static")
-    _archive="uv-aarch64-unknown-linux-musl.tar.gz"
-    if [ -n "$_archive" ]; then
-      echo "$_archive"
-      return 0
-    fi
-    ;;
-  "arm-unknown-linux-gnueabihf")
-    _archive="uv-arm-unknown-linux-musleabihf.tar.gz"
-    if [ -n "$_archive" ]; then
-      echo "$_archive"
-      return 0
-    fi
-    ;;
-  "arm-unknown-linux-musl-dynamiceabihf")
-    _archive="uv-arm-unknown-linux-musleabihf.tar.gz"
-    if [ -n "$_archive" ]; then
-      echo "$_archive"
-      return 0
-    fi
-    ;;
-  "arm-unknown-linux-musl-staticeabihf")
-    _archive="uv-arm-unknown-linux-musleabihf.tar.gz"
-    if [ -n "$_archive" ]; then
-      echo "$_archive"
-      return 0
-    fi
-    ;;
-  "armv7-unknown-linux-gnueabihf")
-    _archive="uv-armv7-unknown-linux-gnueabihf.tar.gz"
-    if ! check_glibc "2" "17"; then
-      _archive=""
-    fi
-    if [ -n "$_archive" ]; then
-      echo "$_archive"
-      return 0
-    fi
-    _archive="uv-armv7-unknown-linux-musleabihf.tar.gz"
-    if [ -n "$_archive" ]; then
-      echo "$_archive"
-      return 0
-    fi
-    ;;
-  "armv7-unknown-linux-musl-dynamiceabihf")
-    _archive="uv-armv7-unknown-linux-musleabihf.tar.gz"
-    if [ -n "$_archive" ]; then
-      echo "$_archive"
-      return 0
-    fi
-    ;;
-  "armv7-unknown-linux-musl-staticeabihf")
-    _archive="uv-armv7-unknown-linux-musleabihf.tar.gz"
-    if [ -n "$_archive" ]; then
-      echo "$_archive"
-      return 0
-    fi
-    ;;
-  "i686-pc-windows-gnu")
-    _archive="uv-i686-pc-windows-msvc.zip"
-    if [ -n "$_archive" ]; then
-      echo "$_archive"
-      return 0
-    fi
-    ;;
-  "i686-pc-windows-msvc")
-    _archive="uv-i686-pc-windows-msvc.zip"
-    if [ -n "$_archive" ]; then
-      echo "$_archive"
-      return 0
-    fi
-    ;;
-  "i686-unknown-linux-gnu")
-    _archive="uv-i686-unknown-linux-gnu.tar.gz"
-    if ! check_glibc "2" "17"; then
-      _archive=""
-    fi
-    if [ -n "$_archive" ]; then
-      echo "$_archive"
-      return 0
-    fi
-    _archive="uv-i686-unknown-linux-musl.tar.gz"
-    if [ -n "$_archive" ]; then
-      echo "$_archive"
-      return 0
-    fi
-    ;;
-  "i686-unknown-linux-musl-dynamic")
-    _archive="uv-i686-unknown-linux-musl.tar.gz"
-    if [ -n "$_archive" ]; then
-      echo "$_archive"
-      return 0
-    fi
-    ;;
-  "i686-unknown-linux-musl-static")
-    _archive="uv-i686-unknown-linux-musl.tar.gz"
-    if [ -n "$_archive" ]; then
-      echo "$_archive"
-      return 0
-    fi
-    ;;
-  "powerpc64-unknown-linux-gnu")
-    _archive="uv-powerpc64-unknown-linux-gnu.tar.gz"
-    if ! check_glibc "2" "17"; then
-      _archive=""
-    fi
-    if [ -n "$_archive" ]; then
-      echo "$_archive"
-      return 0
-    fi
-    ;;
-  "powerpc64le-unknown-linux-gnu")
-    _archive="uv-powerpc64le-unknown-linux-gnu.tar.gz"
-    if ! check_glibc "2" "17"; then
-      _archive=""
-    fi
-    if [ -n "$_archive" ]; then
-      echo "$_archive"
-      return 0
-    fi
-    ;;
-  "riscv64gc-unknown-linux-gnu")
-    _archive="uv-riscv64gc-unknown-linux-gnu.tar.gz"
-    if ! check_glibc "2" "31"; then
-      _archive=""
-    fi
-    if [ -n "$_archive" ]; then
-      echo "$_archive"
-      return 0
-    fi
-    ;;
-  "s390x-unknown-linux-gnu")
-    _archive="uv-s390x-unknown-linux-gnu.tar.gz"
-    if ! check_glibc "2" "17"; then
-      _archive=""
-    fi
-    if [ -n "$_archive" ]; then
-      echo "$_archive"
-      return 0
-    fi
-    ;;
-  "x86_64-apple-darwin")
-    _archive="uv-x86_64-apple-darwin.tar.gz"
+    _archive="lexe-sidecar-linux-aarch64.zip"
     if [ -n "$_archive" ]; then
       echo "$_archive"
       return 0
     fi
     ;;
   "x86_64-pc-windows-gnu")
-    _archive="uv-x86_64-pc-windows-msvc.zip"
+    _archive="lexe-sidecar-windows-x86_64.zip"
     if [ -n "$_archive" ]; then
       echo "$_archive"
       return 0
     fi
     ;;
   "x86_64-pc-windows-msvc")
-    _archive="uv-x86_64-pc-windows-msvc.zip"
-    if [ -n "$_archive" ]; then
-      echo "$_archive"
-      return 0
-    fi
-    _archive="uv-i686-pc-windows-msvc.zip"
+    _archive="lexe-sidecar-windows-x86_64.zip"
     if [ -n "$_archive" ]; then
       echo "$_archive"
       return 0
     fi
     ;;
   "x86_64-unknown-linux-gnu")
-    _archive="uv-x86_64-unknown-linux-gnu.tar.gz"
-    if ! check_glibc "2" "17"; then
-      _archive=""
-    fi
-    if [ -n "$_archive" ]; then
-      echo "$_archive"
-      return 0
-    fi
-    _archive="uv-x86_64-unknown-linux-musl.tar.gz"
+    _archive="lexe-sidecar-linux-x86_64.zip"
     if [ -n "$_archive" ]; then
       echo "$_archive"
       return 0
     fi
     ;;
   "x86_64-unknown-linux-musl-dynamic")
-    _archive="uv-x86_64-unknown-linux-musl.tar.gz"
+    _archive="lexe-sidecar-linux-x86_64.zip"
     if [ -n "$_archive" ]; then
       echo "$_archive"
       return 0
     fi
     ;;
   "x86_64-unknown-linux-musl-static")
-    _archive="uv-x86_64-unknown-linux-musl.tar.gz"
+    _archive="lexe-sidecar-linux-x86_64.zip"
     if [ -n "$_archive" ]; then
       echo "$_archive"
       return 0
@@ -1138,8 +541,8 @@ install() {
 
   # Check the newer app-specific variable before falling back
   # to the older generic one
-  if [ -n "${UV_INSTALL_DIR:-}" ]; then
-    _force_install_dir="$UV_INSTALL_DIR"
+  if [ -n "${LEXE_SIDECAR_INSTALL_DIR:-}" ]; then
+    _force_install_dir="$LEXE_SIDECAR_INSTALL_DIR"
     _install_layout="flat"
   elif [ -n "${CARGO_DIST_FORCE_INSTALL_DIR:-}" ]; then
     _force_install_dir="$CARGO_DIST_FORCE_INSTALL_DIR"
