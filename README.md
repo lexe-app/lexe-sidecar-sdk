@@ -90,7 +90,7 @@ provided, the per-request credentials take precedence.
 
 The Lexe Sidecar SDK is distributed as a single self-contained binary called
 `lexe-sidecar`.
-It runs a local stateless webserver that accepts HTTP requests
+It runs a local webserver that accepts HTTP requests
 and manages the connection to your Lexe node.
 
 **Official install script**
@@ -488,4 +488,63 @@ date: Thu, 11 Sep 2025 22:26:53 GMT
   "data": null,
   "sensitive": false
 }
+```
+
+# Webhooks
+
+The Lexe Sidecar can send webhook notifications when payments are finalized
+(completed or failed). This is useful for tracking payment status without
+polling.
+
+Set `LEXE_WEBHOOK_URL` in your environment or pass `--webhook-url` to the
+sidecar binary:
+
+```bash
+# Via environment variable
+$ export LEXE_WEBHOOK_URL="https://example.com/webhooks/lexe"
+
+# Via CLI argument
+$ ./bin/lexe-sidecar --webhook-url https://example.com/webhooks/lexe
+```
+
+When a payment is finalized, the sidecar will POST a JSON payload to your
+webhook URL:
+
+```json
+{
+  "user_pk": "63ad1661bfc23ad25f5bcc6f610f8fd70d7426de51be74766c24e47f4b4fcfca",
+  "index": "0000001744926519917-ln_9be5e4e3a0356cc4a7a1dce5a4af39e2896b7eb7b007ec6ca8c2f8434f21a63a",
+  "rail": "invoice",
+  "kind": "invoice",
+  "direction": "inbound",
+  "amount": "1000",
+  "fees": "0",
+  "status": "completed",
+  "status_msg": "completed",
+  "finalized_at": 1744926857989
+}
+```
+
+The webhook payload uses the same response schema as `GET /v2/node/payment`, with an
+additional `user_pk` field to identify the wallet (useful for multi-wallet setups).
+
+Your endpoint should return a 200 status code to indicate success.
+
+**NOTE:** Make sure only the sidecar can make requests to your webhook URL!
+Otherwise, someone could trick your server into thinking a payment was finalized by sending a fake webhook to it.
+We recommend running your webhook endpoint on the same machine as the sidecar, so notifications can be received via localhost.
+
+**NOTE**: All webhook handling must be idempotent.
+In rare ocassions, you might receive a payment notification more than once.
+
+The Lexe Sidecar persists all webhook tracking state into a `.lexe/` directory
+in the current working directory. You can override this default directory by using
+the LEXE_DATA_DIR environment variable or the `--data-dir` CLI argument.
+
+```bash
+# Via environment variable
+$ export LEXE_SIDECAR_DATA_DIR="/var/lib/lexe"
+
+# Via CLI argument
+$ ./bin/lexe-sidecar --data-dir /var/lib/lexe
 ```
