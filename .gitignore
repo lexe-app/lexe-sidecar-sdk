@@ -4,6 +4,12 @@
 # Explicitly ignore .git so we can use `--hidden` with tools like rg / fastmod
 .git/
 
+# Binaries
+bin/
+
+# Logs
+logs/
+
 # Misc
 .DS_Store
 Session.vim

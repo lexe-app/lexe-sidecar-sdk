@@ -196,6 +196,85 @@ code. Serve the backend on port 8080.
 Don't ask for permission, just start coding.
 ```
 
+### Replit Users
+
+If you're building on [Replit](https://replit.com), you can use
+[process-compose](https://github.com/F1bonacc1/process-compose) to
+automatically manage the sidecar as a background daemon.
+This provides automatic restart on crashes, health monitoring, and log
+management, all configured for you.
+
+**Quick Setup with Replit Agent**
+
+The easiest way to set up the sidecar on Replit is to paste this prompt into
+the Replit Agent:
+
+```
+Set up the Lexe Lightning sidecar for my Replit project:
+
+1. Download and read the Lexe Sidecar SDK docs for reference:
+   $ curl -fsSL https://raw.githubusercontent.com/lexe-app/lexe-sidecar-sdk/master/README.md -o LEXE_SIDECAR_DOCS.md
+   $ cat LEXE_SIDECAR_DOCS.md
+
+2. Install `process-compose` and `unzip` system dependencies.
+   Use the Replit tool to install these packages.
+   (`unzip` is required for the install script below.)
+
+3. Confirm that `process-compose` and `unzip` are available:
+   $ which process-compose
+   $ which unzip
+
+4. Install the `lexe-sidecar` binary:
+   curl -fsSL https://raw.githubusercontent.com/lexe-app/lexe-sidecar-sdk/master/install.sh | sh
+
+5. Download the `process-compose` configuration:
+   curl -fsSL https://raw.githubusercontent.com/lexe-app/lexe-sidecar-sdk/master/replit/process-compose.yaml -o process-compose.yaml
+
+6. Ask me to add this line at the top of the `.replit` file, then confirm
+   that it has been configured correctly before proceeding:
+   `onBoot = "setsid process-compose up -t=false &"`
+
+7. Prompt me for my `LEXE_CLIENT_CREDENTIALS` value and configure it as a
+   Replit secret.
+
+8. Start the sidecar for this session.
+   $ setsid process-compose up -t=false &
+   Wait a few seconds for the sidecar to start.
+
+9. Confirm sidecar is up and running:
+   - Check the health endpoint: curl http://localhost:5393/v2/health
+   - Test the credentials config: curl http://localhost:5393/v2/node/node_info
+
+The sidecar is now running at http://localhost:5393.
+On future Repl boots, the `onBoot` command will automatically start it.
+
+Once we've confirmed that the sidecar runs smoothly with client credentials
+configured correctly, return to me and we'll begin working on our app.
+Don't stop until we've confirmed that the node-info endpoint works correctly.
+```
+
+The Replit Agent will configure everything, prompt you for your credentials,
+and verify the setup is working.
+
+**Manual Setup**
+
+If you prefer to configure manually:
+
+1. Add `process-compose` and `unzip` to the `[nix]` section in `.replit`:
+   ```toml
+   [nix]
+   channel = "stable-24_05"
+   packages = ["process-compose", "unzip"]
+   ```
+2. Install `lexe-sidecar`: `curl -fsSL https://raw.githubusercontent.com/lexe-app/lexe-sidecar-sdk/master/install.sh | sh`
+3. Download the config: `curl -fsSL https://raw.githubusercontent.com/lexe-app/lexe-sidecar-sdk/master/replit/process-compose.yaml -o process-compose.yaml`
+4. Add `onBoot = "setsid process-compose up -t=false &"` to the top of `.replit`
+5. Configure your `LEXE_CLIENT_CREDENTIALS` as a Replit secret
+6. Start the sidecar: `setsid process-compose up -t=false &`
+
+The sidecar is now running at `http://localhost:5393`.
+On future Repl boots, the `onBoot` command will automatically start it.
+
 ## Unofficial `lexe-wrapper` Python package
 
 *Note: This is an unofficial, community-made tool not developed by Lexe.
