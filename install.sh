@@ -255,6 +255,11 @@ download_binary_and_run_installer() {
     ;;
   esac
 
+  # Check if unzip is available when needed
+  if [ "$_zip_ext" = ".zip" ]; then
+    need_cmd unzip
+  fi
+
   # Replace the placeholder binaries with the calculated array from above
   RECEIPT="$(echo "$RECEIPT" | sed s/'"CARGO_DIST_BINS"'/"$_bins_js_array"/)"
   RECEIPT="$(echo "$RECEIPT" | sed s/'"CARGO_DIST_DYLIBS"'/"$_libs_js_array"/)"
