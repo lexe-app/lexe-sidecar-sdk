@@ -209,7 +209,7 @@ Before starting the Replit Agent, make sure the Agent is set to "Build" (not "Pl
 Then paste this prompt into the Replit Agent:
 
 ```
-Set up the Lexe Lightning sidecar for my Replit project:
+Set up the Lexe Sidecar for my Replit project:
 
 1. Download and read the Lexe Sidecar SDK docs for reference.
    $ curl -fsSL https://raw.githubusercontent.com/lexe-app/lexe-sidecar-sdk/master/README.md -o LEXE_SIDECAR_DOCS.md
@@ -223,24 +223,36 @@ Set up the Lexe Lightning sidecar for my Replit project:
 
 4. Prompt me for my `LEXE_CLIENT_CREDENTIALS` value and configure it as a Replit secret.
 
-5. Ask me to update the `.replit` file with the following THREE changes, then confirm that it has been configured correctly before proceeding:
+5. Ask me to update the `.replit` file to run the sidecar, then confirm it has been configured correctly before proceeding.
+   When showing me what to change, provide the exact old and new TOML blocks so I can copy-paste without needing to understand TOML syntax.
+   Make these TWO changes:
 
-   A. Update the `run` command (near the top of the file).
-      Prepend `./.local/bin/lexe-sidecar &` to the existing command.
-      For example: `run = "./.local/bin/lexe-sidecar & npm run dev"`
+   A. Add a new "Lexe Sidecar" workflow that runs in parallel with the app.
+      Add this workflow definition (do NOT add waitForPort - it causes timeouts):
+      ```
+      [[workflows.workflow]]
+      name = "Lexe Sidecar"
+      author = "agent"
+      mode = "sequential"
 
-   B. Update the `[workflows]` section to prepend `./.local/bin/lexe-sidecar &` to the command that starts the app.
-      For example, change:
-      `args = "npm run dev"`
-      to:
-      `args = "./.local/bin/lexe-sidecar & npm run dev"`
+      [[workflows.workflow.tasks]]
+      task = "shell.exec"
+      args = "./.local/bin/lexe-sidecar"
+      ```
 
-   C. Update the `[deployment]` section's `run` array to prepend the sidecar.
+      Then add a task to run this workflow in parallel with the main app workflow:
+      ```
+      [[workflows.workflow.tasks]]
+      task = "workflow.run"
+      args = "Lexe Sidecar"
+      ```
+
+   B. Update the `[deployment]` section's `run` array to prepend the sidecar.
       Wrap the command in a shell invocation.
       For example, change:
-      `run = ["node", "./dist/index.cjs"]`
+      `run = ["npm", "run", "server:prod"]`
       to:
-      `run = ["sh", "-c", "./.local/bin/lexe-sidecar & node ./dist/index.cjs"]`
+      `run = ["sh", "-c", "./.local/bin/lexe-sidecar & npm run server:prod"]`
 
 6. Restart the workflow using the `restart_workflow` tool, then wait a few seconds for it to restart.
 
@@ -262,10 +274,9 @@ If you prefer to configure manually:
 
 1. Install `lexe-sidecar`: `curl -fsSL https://raw.githubusercontent.com/lexe-app/lexe-sidecar-sdk/master/install.sh | sh`
 2. Configure your `LEXE_CLIENT_CREDENTIALS` as a Replit secret
-3. Update `.replit` to prepend `./.local/bin/lexe-sidecar &` to both:
-   - The `run` command (near the top)
-   - The workflow `args` in the `shell.exec` task (near the bottom)
-4. Restart the workflow (or use `kill 1` to restart the entire Repl)
+3. Update `.replit` to add a "Lexe Sidecar" workflow that runs `./.local/bin/lexe-sidecar` in parallel with your app
+4. Update the `[deployment]` section's `run` to prepend `./.local/bin/lexe-sidecar &`
+5. Restart the workflow
 
 The sidecar will now run automatically alongside your application at
 `http://localhost:5393`.
