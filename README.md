@@ -198,59 +198,59 @@ Don't ask for permission, just start coding.
 
 ### Replit Users
 
-If you're building on [Replit](https://replit.com), you can use
-[process-compose](https://github.com/F1bonacc1/process-compose) to
-automatically manage the sidecar as a background daemon.
-This provides automatic restart on crashes, health monitoring, and log
-management, all configured for you.
+If you're building on [Replit](https://replit.com), you can quickly set up the sidecar in your environment by pasting the setup prompt below.
 
-**Quick Setup with Replit Agent**
+**Recommended: Prompted Setup with Replit Agent**
 
-The easiest way to set up the sidecar on Replit is to paste this prompt into
-the Replit Agent:
+Before starting the Replit Agent, make sure the Agent is set to "Build" (not "Plan") and the application type is NOT set to "Automation":
+
+<img src="images/replit-screenshot.png" alt="Replit Agent Settings" width="500">
+
+Then paste this prompt into the Replit Agent:
 
 ```
 Set up the Lexe Lightning sidecar for my Replit project:
 
-1. Download and read the Lexe Sidecar SDK docs for reference:
+1. Download and read the Lexe Sidecar SDK docs for reference.
    $ curl -fsSL https://raw.githubusercontent.com/lexe-app/lexe-sidecar-sdk/master/README.md -o LEXE_SIDECAR_DOCS.md
    $ cat LEXE_SIDECAR_DOCS.md
 
-2. Install `process-compose` and `unzip` system dependencies.
-   Use the Replit tool to install these packages.
-   (`unzip` is required for the install script below.)
+2. Install the `unzip` system dependency using the Replit tool.
+   (This is required for the install script below.)
 
-3. Confirm that `process-compose` and `unzip` are available:
-   $ which process-compose
-   $ which unzip
+3. Install the `lexe-sidecar` binary.
+   $ curl -fsSL https://raw.githubusercontent.com/lexe-app/lexe-sidecar-sdk/master/install.sh | sh
 
-4. Install the `lexe-sidecar` binary:
-   curl -fsSL https://raw.githubusercontent.com/lexe-app/lexe-sidecar-sdk/master/install.sh | sh
+4. Prompt me for my `LEXE_CLIENT_CREDENTIALS` value and configure it as a Replit secret.
 
-5. Download the `process-compose` configuration:
-   curl -fsSL https://raw.githubusercontent.com/lexe-app/lexe-sidecar-sdk/master/replit/process-compose.yaml -o process-compose.yaml
+5. Ask me to update the `.replit` file with the following THREE changes, then confirm that it has been configured correctly before proceeding:
 
-6. Ask me to add this line at the top of the `.replit` file, then confirm
-   that it has been configured correctly before proceeding:
-   `onBoot = "setsid process-compose up -t=false &"`
+   A. Update the `run` command (near the top of the file).
+      Prepend `./.local/bin/lexe-sidecar &` to the existing command.
+      For example: `run = "./.local/bin/lexe-sidecar & npm run dev"`
 
-7. Prompt me for my `LEXE_CLIENT_CREDENTIALS` value and configure it as a
-   Replit secret.
+   B. Update the `[workflows]` section to prepend `./.local/bin/lexe-sidecar &` to the command that starts the app.
+      For example, change:
+      `args = "npm run dev"`
+      to:
+      `args = "./.local/bin/lexe-sidecar & npm run dev"`
 
-8. Start the sidecar for this session.
-   $ setsid process-compose up -t=false &
-   Wait a few seconds for the sidecar to start.
+   C. Update the `[deployment]` section's `run` array to prepend the sidecar.
+      Wrap the command in a shell invocation.
+      For example, change:
+      `run = ["node", "./dist/index.cjs"]`
+      to:
+      `run = ["sh", "-c", "./.local/bin/lexe-sidecar & node ./dist/index.cjs"]`
 
-9. Confirm sidecar is up and running:
+6. Restart the workflow using the `restart_workflow` tool, then wait a few seconds for it to restart.
+
+7. Confirm sidecar is up and running.
    - Check the health endpoint: curl http://localhost:5393/v2/health
    - Test the credentials config: curl http://localhost:5393/v2/node/node_info
 
-The sidecar is now running at http://localhost:5393.
-On future Repl boots, the `onBoot` command will automatically start it.
+The sidecar will now run automatically alongside the application at http://localhost:5393.
 
-Once we've confirmed that the sidecar runs smoothly with client credentials
-configured correctly, return to me and we'll begin working on our app.
-Don't stop until we've confirmed that the node-info endpoint works correctly.
+Once we've confirmed that the sidecar runs smoothly with client credentials configured correctly, return to me and we'll begin working on our app. Don't stop until we've confirmed that the node-info endpoint works correctly.
 ```
 
 The Replit Agent will configure everything, prompt you for your credentials,
@@ -260,20 +260,15 @@ and verify the setup is working.
 
 If you prefer to configure manually:
 
-1. Add `process-compose` and `unzip` to the `[nix]` section in `.replit`:
-   ```toml
-   [nix]
-   channel = "stable-24_05"
-   packages = ["process-compose", "unzip"]
-   ```
-2. Install `lexe-sidecar`: `curl -fsSL https://raw.githubusercontent.com/lexe-app/lexe-sidecar-sdk/master/install.sh | sh`
-3. Download the config: `curl -fsSL https://raw.githubusercontent.com/lexe-app/lexe-sidecar-sdk/master/replit/process-compose.yaml -o process-compose.yaml`
-4. Add `onBoot = "setsid process-compose up -t=false &"` to the top of `.replit`
-5. Configure your `LEXE_CLIENT_CREDENTIALS` as a Replit secret
-6. Start the sidecar: `setsid process-compose up -t=false &`
+1. Install `lexe-sidecar`: `curl -fsSL https://raw.githubusercontent.com/lexe-app/lexe-sidecar-sdk/master/install.sh | sh`
+2. Configure your `LEXE_CLIENT_CREDENTIALS` as a Replit secret
+3. Update `.replit` to prepend `./.local/bin/lexe-sidecar &` to both:
+   - The `run` command (near the top)
+   - The workflow `args` in the `shell.exec` task (near the bottom)
+4. Restart the workflow (or use `kill 1` to restart the entire Repl)
 
-The sidecar is now running at `http://localhost:5393`.
-On future Repl boots, the `onBoot` command will automatically start it.
+The sidecar will now run automatically alongside your application at
+`http://localhost:5393`.
 
 ## Unofficial `lexe-wrapper` Python package
 
