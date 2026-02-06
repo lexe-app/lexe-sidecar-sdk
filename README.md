@@ -24,26 +24,19 @@ The `lexe-sidecar` source code can be found in the Lexe monorepo at:
 
 ### Download the Lexe Wallet app
 
-To get started, you'll need a Lexe wallet. Developers building on the Sidecar
-SDK are eligible for early access to Lexe wallet, which is currently in closed
-beta. Fill out this short form, which will give you a signup code:
-
-<https://lexe.app/dev-signup>
-
-Download the mobile app for:
+To get started, you'll need a Lexe wallet. Download the Lexe mobile app for:
 
 * iOS (Testflight): <https://lexe.app/beta-ios>
 * Android (Play Store): <https://lexe.app/beta-android>
 
-_iOS users_: Testflight sometimes asks for an "access code", which is different
-from our signup code; you may need to reinstall the Testflight app to get past
-this.
+> **Note for iOS users**: TestFlight sometimes asks for an "access code".
+> If you see this prompt, try clicking the download link again.
+> If that doesn't work, reinstall the TestFlight app and retry.
 
-After installing the app, select "Create a new wallet", enter the signup code
-sent to your email, connect your Google Drive (for backups), and set a backup
-password. This will create a new self-custody Bitcoin+Lightning wallet that runs
-in a secure enclave in the cloud; you can now send and receive Lightning
-payments 24/7!
+After installing the app, select "Create a new wallet", optionally connect your
+Google Drive (for backups), and set a backup password. This will create a new
+self-custody Bitcoin+Lightning wallet that runs in a secure enclave in the
+cloud; you can now send and receive Lightning payments 24/7!
 
 ### Configure credentials for the SDK
 
