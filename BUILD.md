@@ -1,10 +1,10 @@
-# Building the `lexe-sidecar` binary
+# Building `lexe-sidecar` from source
 
 Lexe provides precompiled binaries for the `lexe-sidecar`, but the sidecar can
 also be built from source if your platform is not provided or you prefer the
 extra security.
 
-## Building from source
+## Steps
 
 Install `rustup`
 
@@ -47,4 +47,4 @@ $ cargo build --release -p sdk-sidecar --bin lexe-sidecar
 $ cp target/release/lexe-sidecar ~/bin
 ```
 
-See the Quickstart guide in the main [README.md](README.md) for remaining setup.
+See the [Quickstart](quickstart.md) page for remaining setup.
