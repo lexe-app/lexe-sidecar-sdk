@@ -127,7 +127,7 @@ library, which provides:
 - A `Sidecar` webserver which can be `.run()` within your async Rust app.
 - A `SidecarClient` which fully implements the sidecar API.
 
-See [example-rust](https://github.com/lexe-app/lexe-sidecar-sdk/tree/master/example-rust)
+See [rust-example](https://github.com/lexe-app/lexe-sidecar-sdk/tree/master/rust-example)
 for an example which implements both a sidecar client and server.
 
 ### Run the sidecar
@@ -156,10 +156,10 @@ $ curl http://localhost:5393/v2/node/node_info | jq .
   "node_pk": "02e4d8f86591eb2ce59a787e2a5abb83278c86198ac22854e9e3cf365cf8d9730f",
   "balance": "95507",
   "lightning_balance": "40000",
-  "usable_lightning_balance": "40000",
-  "max_sendable_lightning_balance": "39824.777",
+  "lightning_sendable_balance": "40000",
+  "lightning_max_sendable_balance": "39824.777",
   "onchain_balance": "55507",
-  "trusted_onchain_balance": "55507",
+  "onchain_trusted_balance": "55507",
   "num_channels": 1,
   "num_usable_channels": 1
 }
