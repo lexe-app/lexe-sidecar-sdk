@@ -519,7 +519,6 @@ If the payment is not found, the endpoint returns HTTP 404.
 - `kind`: The application-level payment kind, e.g. `"onchain"`, `"invoice"`, `"offer"`, `"spontaneous"`, `"waived_channel_fee"`, `"waived_liquidity_fee"`.
 - `direction`: The payment direction: `"inbound"`, `"outbound"`, or `"info"`.
 - `txid`: (Onchain payments only) The txid of the on-chain payment.
-- `replacement`: (Onchain payments only) The hex-encoded txid of the transaction that spent the outputs spent by this on-chain payment, if one exists.
 - `status`: The status of this payment: `"pending"`, `"completed"`, `"failed"`.
 - `status_msg`: The payment status as a human-readable message. These strings are customized per payment type, e.g. "invoice generated", "timed out".
 - `finalized_at`: If this payment is finalized, meaning it is "completed" or "failed", this is the time it was finalized, in milliseconds since the UNIX epoch.
@@ -535,7 +534,6 @@ $ curl 'http://localhost:5393/v2/node/payment?index=0000001744926519917-ln_9be5e
   "kind": "invoice",
   "direction": "inbound",
   "txid": null,
-  "replacement": null,
   "amount": null,
   "fees": "0",
   "status": "pending",
@@ -551,7 +549,6 @@ $ curl 'http://localhost:5393/v2/node/payment?index=0000001744926842458-ln_e1f8e
   "kind": "invoice",
   "direction": "outbound",
   "txid": null,
-  "replacement": null,
   "amount": "10",
   "fees": "0.03",
   "status": "completed",
