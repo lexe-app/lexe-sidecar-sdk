@@ -625,8 +625,8 @@ the LEXE_DATA_DIR environment variable or the `--data-dir` CLI argument.
 
 ```bash
 # Via environment variable
-$ export LEXE_SIDECAR_DATA_DIR="/var/lib/lexe"
+$ export LEXE_DATA_DIR="$HOME/.lexe"
 
 # Via CLI argument
-$ ./bin/lexe-sidecar --data-dir /var/lib/lexe
+$ ./bin/lexe-sidecar --data-dir ~/.lexe
 ```
