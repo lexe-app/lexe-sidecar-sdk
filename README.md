@@ -515,13 +515,26 @@ The response includes the payment details.
 If the payment is not found, the endpoint returns HTTP 404.
 
 - `index`: Identifier for this payment.
+- `id`: Unordered payment identifier. Prefer `index` for lookups.
 - `rail`: The technical payment mechanism: `"onchain"`, `"invoice"`, `"offer"`, `"spontaneous"`.
 - `kind`: The application-level payment kind, e.g. `"onchain"`, `"invoice"`, `"offer"`, `"spontaneous"`, `"waived_channel_fee"`, `"waived_liquidity_fee"`.
 - `direction`: The payment direction: `"inbound"`, `"outbound"`, or `"info"`.
-- `txid`: (Onchain payments only) The txid of the on-chain payment.
+- `txid`: (Onchain payments only) The hex-encoded Bitcoin txid.
+- `amount`: The payment amount in satoshis, or `null` for pending amountless invoices.
+- `fees`: Fees paid in satoshis.
 - `status`: The status of this payment: `"pending"`, `"completed"`, `"failed"`.
 - `status_msg`: The payment status as a human-readable message. These strings are customized per payment type, e.g. "invoice generated", "timed out".
+- `address`: (Onchain send only) The destination Bitcoin address.
+- `invoice`: (Invoice payments only) The BOLT11 invoice string.
+- `tx`: (Onchain payments only) The raw Bitcoin transaction.
+- `note`: An optional personal note attached to this payment.
+- `payer_name`: (Offer payments only) The payer's self-reported name.
+- `payer_note`: (Offer payments only) A payer-provided note.
+- `priority`: (Onchain send only) The confirmation priority: `"high"`, `"normal"`, `"background"`.
+- `expires_at`: The invoice or offer expiry time, in milliseconds since the UNIX epoch.
 - `finalized_at`: If this payment is finalized, meaning it is "completed" or "failed", this is the time it was finalized, in milliseconds since the UNIX epoch.
+- `created_at`: When this payment was created, in milliseconds since the UNIX epoch.
+- `updated_at`: When this payment was last updated, in milliseconds since the UNIX epoch.
 
 **Examples:**
 
