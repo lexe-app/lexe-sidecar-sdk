@@ -514,8 +514,7 @@ parameter.
 The response includes the payment details.
 If the payment is not found, the endpoint returns HTTP 404.
 
-- `index`: Identifier for this payment.
-- `id`: Unordered payment identifier. Prefer `index` for lookups.
+- `index`: Unique payment identifier, ordered by `created_at`.
 - `rail`: The technical payment mechanism: `"onchain"`, `"invoice"`, `"offer"`, `"spontaneous"`.
 - `kind`: The application-level payment kind, e.g. `"onchain"`, `"invoice"`, `"offer"`, `"spontaneous"`, `"waived_channel_fee"`, `"waived_liquidity_fee"`.
 - `direction`: The payment direction: `"inbound"`, `"outbound"`, or `"info"`.
@@ -543,7 +542,6 @@ $ curl 'http://localhost:5393/v2/node/payment?index=0000001772349163844-ln_003dd
      | jq .
 {
   "index": "0000001772349163844-ln_003dd23aec576e7d0d85aa991ff9c2dc471fd7c863ff31b93bfbb02836eb56b5",
-  "id": "ln_003dd23aec576e7d0d85aa991ff9c2dc471fd7c863ff31b93bfbb02836eb56b5",
   "rail": "invoice",
   "kind": "invoice",
   "direction": "inbound",
