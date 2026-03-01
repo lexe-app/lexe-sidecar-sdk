@@ -383,18 +383,18 @@ Empty.
 ```bash
 $ curl http://localhost:5393/v2/node/node_info | jq .
 {
-  "version": "0.7.10",
-  "measurement": "f7415694ca3262f8b479d915a1799f896902a8697c469f69d9a86eb8c9f1089f",
+  "version": "0.9.2",
+  "measurement": "e9cc14a630c8c6973be2f7cfdfe1baac5d997e907485f4f21fd1ba179b0a0cb9",
   "user_pk": "b484a4890b47358ee68684bcd502d2eefa1bc66cc0f8ac2e5f06384676be74eb",
   "node_pk": "0203e73be064cc91d5e3c96d8e2f2f124f3196e07e9916b51307b6ff5419b59f6e",
-  "balance": "134736",
-  "lightning_balance": "75282",
-  "lightning_sendable_balance": "57505.107",
-  "lightning_max_sendable_balance": "57203.107",
-  "onchain_balance": "59454",
-  "onchain_trusted_balance": "59454",
-  "num_channels": 5,
-  "num_usable_channels": 5
+  "balance": "924823",
+  "lightning_balance": "461071",
+  "lightning_sendable_balance": "442478.190",
+  "lightning_max_sendable_balance": "445995.804",
+  "onchain_balance": "463752",
+  "onchain_trusted_balance": "463752",
+  "num_channels": 4,
+  "num_usable_channels": 4
 }
 ```
 
@@ -438,14 +438,14 @@ $ curl -X POST http://localhost:5393/v2/node/create_invoice \
     --data '{ "expiration_secs": 3600 }' \
     | jq .
 {
-  "index": "0000001744926519917-ln_9be5e4e3a0356cc4a7a1dce5a4af39e2896b7eb7b007ec6ca8c2f8434f21a63a",
-  "invoice": "lnbc1p5qzaehdqqpp5n0j7fcaqx4kvffapmnj6fteeu2ykkl4hkqr7cm9gctuyxnep5caqcqpcsp5slzxgxrsu3jq8xq7rp2gx3ge0thlt3446jpp8kqs87pve60679ls9qyysgqxqrrssnp4q0vzagw8x7r9eyalw35t0u6syql8rtqf9tejep0z6xrwkqrua5advrzjqv22wafr68wtchd4vzq7mj7zf2uzpv67xsaxcemfzak7wp7p0r29wzmk4uqqj5sqqyqqqqqqqqqqhwqqfq89vuhjlg2tt56sv9pdt8t5cvdgfaaf6nxqtt0av74ragpql7l2d42euknlw06fcgp8xhe93xe7c802z3hrnysfsjgavmwfts7zdvj2cqka3672",
+  "index": "0000001772349163844-ln_003dd23aec576e7d0d85aa991ff9c2dc471fd7c863ff31b93bfbb02836eb56b5",
+  "invoice": "lnbc1p568ehtdqqpp5qq7aywhv2ah86rv942v3l7wzm3r3l47gv0lnrwfmlwczsdht266scqpcsp5a3v0skathghudyaszdze77dnuh7pnza7phagq5c7ke5mqra3nuqs9qyysgqxqrrssnp4qgp7wwlqvnxfr40re9kcute0zf8nr9hq06v3ddgnq7m074qekk0kurzjqv22wafr68wtchd4vzq7mj7zf2uzpv67xsaxcemfzak7wp7p0r29wzxnguqq2qsqqcqqqqqqqqqqhwqqfq73dfkaqrghzc0lpgeandl5zfjxh2z6fhk47sfph40dqv72tefmw9j4a7c8w0f0l7uyjfa9dzwpy7ypllmvmxd4n2ggfufd593yh5v7cq5uaa9s",
   "description": null,
   "amount": null,
-  "created_at": 1744926519000,
-  "expires_at": 1744930119000,
-  "payment_hash": "9be5e4e3a0356cc4a7a1dce5a4af39e2896b7eb7b007ec6ca8c2f8434f21a63a",
-  "payment_secret": "87c4641870e46403981e18548345197aeff5c6b5d48213d8103f82cce9faf17f"
+  "created_at": 1772349163000,
+  "expires_at": 1772352763000,
+  "payment_hash": "003dd23aec576e7d0d85aa991ff9c2dc471fd7c863ff31b93bfbb02836eb56b5",
+  "payment_secret": "ec58f85babba2fc693b013459f79b3e5fc198bbe0dfa80531eb669b00fb19f01"
 }
 
 $ curl -X POST http://localhost:5393/v2/node/create_invoice \
@@ -453,14 +453,14 @@ $ curl -X POST http://localhost:5393/v2/node/create_invoice \
     --data '{ "expiration_secs": 3600, "amount": "1000", "description": "Lunch" }' \
     | jq .
 {
-  "index": "0000001744926580307-ln_12c8ec9465cff06b756b9f20dbdfd9d4b03b3c153bd39a5401c61a0241bd1e96",
-  "invoice": "lnbc10u1p5qzam5dqgf36kucmgpp5ztywe9r9elcxkattnusdhh7e6jcrk0q480fe54qpccdqysdar6tqcqpcsp5f3nvkgufsxxnsfa4wnyzgjk3sjpxcwsp8zw4ck0mstcyrgpyu8ls9qyysgqxqrrssnp4q0vzagw8x7r9eyalw35t0u6syql8rtqf9tejep0z6xrwkqrua5advrzjqv22wafr68wtchd4vzq7mj7zf2uzpv67xsaxcemfzak7wp7p0r29wzmk4uqqj5sqqyqqqqqqqqqqhwqqfqdtsc32py445jyfcdwcnf25kwwh0ezvw0890xlpfjxtm4a9pcuyjpvd54alrze0tzxzl4cgm82q3deh7w66zsukuccrgzq59vpp28lvgp4jesmt",
+  "index": "0000001772349167284-ln_16ec06bf32459f0bd3fbbf2fdaace70b60dcadbbfb170de097edd5e515d7ac18",
+  "invoice": "lnbc10u1p568eh0dqgf36kucmgpp5zmkqd0ejgk0sh5lmhuha4t88pdsdetdmlvtsmcyhah2729wh4svqcqpcsp5red8hqrl6wx8zvufsgfwge2chcrgd9cmxeu8kdl5u5egf2wqhjvq9qyysgqxqrrssnp4qgp7wwlqvnxfr40re9kcute0zf8nr9hq06v3ddgnq7m074qekk0kurzjqv22wafr68wtchd4vzq7mj7zf2uzpv67xsaxcemfzak7wp7p0r29wzxnguqq2qsqqcqqqqqqqqqqhwqqfqd9lunvz89ed636ymga55aypfgdx9g0fgxga4edcxatwzzac2ssqpt6gyuy73ezyav7gsg2tvj92cg9wvzlrrh7jhc76he6r8pllq0qqquygrtn",
   "description": "Lunch",
   "amount": "1000",
-  "created_at": 1744926580000,
-  "expires_at": 1744930180000,
-  "payment_hash": "12c8ec9465cff06b756b9f20dbdfd9d4b03b3c153bd39a5401c61a0241bd1e96",
-  "payment_secret": "4c66cb2389818d3827b574c8244ad184826c3a01389d5c59fb82f041a024e1ff"
+  "created_at": 1772349167000,
+  "expires_at": 1772352767000,
+  "payment_hash": "16ec06bf32459f0bd3fbbf2fdaace70b60dcadbbfb170de097edd5e515d7ac18",
+  "payment_secret": "1e5a7b807fd38c7133898212e46558be0686971b36787b37f4e53284a9c0bc98"
 }
 ```
 
@@ -539,10 +539,11 @@ If the payment is not found, the endpoint returns HTTP 404.
 **Examples:**
 
 ```bash
-$ curl 'http://localhost:5393/v2/node/payment?index=0000001744926519917-ln_9be5e4e3a0356cc4a7a1dce5a4af39e2896b7eb7b007ec6ca8c2f8434f21a63a' \
+$ curl 'http://localhost:5393/v2/node/payment?index=0000001772349163844-ln_003dd23aec576e7d0d85aa991ff9c2dc471fd7c863ff31b93bfbb02836eb56b5' \
      | jq .
 {
-  "index": "0000001744926519917-ln_9be5e4e3a0356cc4a7a1dce5a4af39e2896b7eb7b007ec6ca8c2f8434f21a63a",
+  "index": "0000001772349163844-ln_003dd23aec576e7d0d85aa991ff9c2dc471fd7c863ff31b93bfbb02836eb56b5",
+  "id": "ln_003dd23aec576e7d0d85aa991ff9c2dc471fd7c863ff31b93bfbb02836eb56b5",
   "rail": "invoice",
   "kind": "invoice",
   "direction": "inbound",
@@ -551,23 +552,17 @@ $ curl 'http://localhost:5393/v2/node/payment?index=0000001744926519917-ln_9be5e
   "fees": "0",
   "status": "pending",
   "status_msg": "invoice generated",
-  "note": null
-}
-
-$ curl 'http://localhost:5393/v2/node/payment?index=0000001744926842458-ln_e1f8e7fa3f3b43eb65afe4897ca1c63688636ba0a23b3011710e433b51bb3f9a' \
-    | jq .
-{
-  "index": "0000001744926842458-ln_e1f8e7fa3f3b43eb65afe4897ca1c63688636ba0a23b3011710e433b51bb3f9a",
-  "rail": "invoice",
-  "kind": "invoice",
-  "direction": "outbound",
-  "txid": null,
-  "amount": "10",
-  "fees": "0.03",
-  "status": "completed",
-  "status_msg": "completed",
-  "note": "My personal note",
-  "finalized_at": 1744926857989
+  "address": null,
+  "invoice": "lnbc1p568ehtdqqpp5qq7aywhv2ah86rv942v3l7wzm3r3l47gv0lnrwfmlwczsdht266scqpcsp5a3v0skathghudyaszdze77dnuh7pnza7phagq5c7ke5mqra3nuqs9qyysgqxqrrssnp4qgp7wwlqvnxfr40re9kcute0zf8nr9hq06v3ddgnq7m074qekk0kurzjqv22wafr68wtchd4vzq7mj7zf2uzpv67xsaxcemfzak7wp7p0r29wzxnguqq2qsqqcqqqqqqqqqqhwqqfq73dfkaqrghzc0lpgeandl5zfjxh2z6fhk47sfph40dqv72tefmw9j4a7c8w0f0l7uyjfa9dzwpy7ypllmvmxd4n2ggfufd593yh5v7cq5uaa9s",
+  "tx": null,
+  "note": null,
+  "payer_name": null,
+  "payer_note": null,
+  "priority": null,
+  "expires_at": 1772352763000,
+  "finalized_at": null,
+  "created_at": 1772349163844,
+  "updated_at": 1772349163844
 }
 
 # Example of missing payment (returns HTTP 404)
