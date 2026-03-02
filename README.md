@@ -45,17 +45,19 @@ password. This will create a new self-custody Bitcoin+Lightning wallet that runs
 in a secure enclave in the cloud; you can now send and receive Lightning
 payments 24/7!
 
-### Export client credentials for the SDK
+### Configure credentials for the SDK
 
-To control your wallet using the Lexe Sidecar SDK, you'll first need to export
-client credentials from the app:
+The sidecar supports two credential types:
+
+- `ClientCredentials`: control an existing wallet created in the Lexe app.
+- `RootSeed`: auth for an existing wallet whose seed you manage.
+
+**Option 1: Default `ClientCredentials` via env (single-wallet use)**
+
+To control a wallet created in the app, export client credentials:
 
 1. Open the Lexe app > Menu sidebar > "SDK clients" > "Create new client"
 2. Copy the client credentials string
-
-The sidecar supports two ways to provide credentials:
-
-**Option 1: Default credentials via env (single-wallet use)**
 
 Set `LEXE_CLIENT_CREDENTIALS` in your environment or in a `.env` file:
 
@@ -71,7 +73,24 @@ $ chmod 600 .env
 # Then edit .env and set LEXE_CLIENT_CREDENTIALS
 ```
 
-**Option 2: Per-request `Authorization` header (multi-wallet use)**
+**Option 2: Default `RootSeed` via env (advanced, single-wallet use)**
+
+Use this if your backend already stores root seeds.
+The sidecar does not perform signup or provisioning.
+For signup and provisioning flows, use the Rust or Python SDKs.
+
+Set `ROOT_SEED` or `ROOT_SEED_PATH` instead:
+
+```bash
+# Option 2A: Set directly in environment
+$ export ROOT_SEED="0123...abcd"
+
+# Option 2B: Load from a file containing your hex root seed
+$ export ROOT_SEED_PATH="/Users/satoshi/secrets/lexe_root_seed.txt"
+```
+
+**Option 3: Per-request `Authorization` header (multi-wallet use,
+`ClientCredentials` only)**
 
 Alternatively, you can pass credentials per-request via the `Authorization`
 header, with the value formatted as `Bearer <credentials>`.
@@ -302,7 +321,6 @@ prompt in less than 3 minutes:
 [Watch video](https://youtu.be/svGZW7IrK9M)
 
 [![Watch the video](https://img.youtube.com/vi/svGZW7IrK9M/0.jpg)](https://www.youtube.com/watch?v=svGZW7IrK9M)
-
 # REST API Reference
 
 The Lexe SDK sidecar exposes the following REST API endpoints:
