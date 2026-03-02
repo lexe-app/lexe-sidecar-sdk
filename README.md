@@ -79,14 +79,14 @@ Use this if your backend already stores root seeds.
 The sidecar does not perform signup or provisioning.
 For signup and provisioning flows, use the Rust or Python SDKs.
 
-Set `ROOT_SEED` or `ROOT_SEED_PATH` instead:
+Set `LEXE_ROOT_SEED` or `LEXE_ROOT_SEED_PATH` instead:
 
 ```bash
 # Option 2A: Set directly in environment
-$ export ROOT_SEED="0123...abcd"
+$ export LEXE_ROOT_SEED="0123...abcd"
 
 # Option 2B: Load from a file containing your hex root seed
-$ export ROOT_SEED_PATH="/Users/satoshi/secrets/lexe_root_seed.txt"
+$ export LEXE_ROOT_SEED_PATH="/Users/satoshi/secrets/lexe_root_seed.txt"
 ```
 
 **Option 3: Per-request `Authorization` header (multi-wallet use,
