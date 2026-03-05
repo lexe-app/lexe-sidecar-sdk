@@ -528,7 +528,7 @@ If the payment is not found, the endpoint returns HTTP 404.
 - `tx`: (Onchain payments only) The raw Bitcoin transaction.
 - `note`: An optional personal note attached to this payment.
 - `payer_name`: (Offer payments only) The payer's self-reported name.
-- `payer_note`: (Offer payments only) A payer-provided note.
+- `payer_note`: (Offer payments, LNURL-pay invoices) A payer-provided note.
 - `priority`: (Onchain send only) The confirmation priority: `"high"`, `"normal"`, `"background"`.
 - `expires_at`: The invoice or offer expiry time, in milliseconds since the UNIX epoch.
 - `finalized_at`: If this payment is finalized, meaning it is "completed" or "failed", this is the time it was finalized, in milliseconds since the UNIX epoch.
