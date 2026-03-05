@@ -5,22 +5,19 @@ use lexe_sidecar::{
     cli::SidecarArgs,
     client::SidecarClient,
     def::UserSidecarApi,
-    lexe::{
-        self, lexe_tokio::notify_once::NotifyOnce,
-        node_client::credentials::ClientCredentials,
-    },
+    lexe::{self, serde_json, types::auth::ClientCredentials},
     run::Sidecar,
-    serde_json,
-    tracing::info,
+    NotifyOnce,
 };
 use tokio::task::JoinHandle;
+use tracing::info;
 
 fn main() -> anyhow::Result<()> {
     // (Optional) Load env vars from .env.
     let _ = dotenvy::dotenv();
 
     // (Optional) Set up Lexe's `tracing` logger.
-    lexe::logger::init_with_default("info");
+    lexe::init_logger("info");
     info!("Initializing program.");
 
     let rt = tokio::runtime::Builder::new_current_thread()
