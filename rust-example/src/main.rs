@@ -1,13 +1,13 @@
-use std::{env, net::SocketAddr};
+use std::{env, net::SocketAddr, str::FromStr};
 
 use anyhow::Context;
 use lexe_sidecar::{
     cli::SidecarArgs,
     client::SidecarClient,
     def::UserSidecarApi,
-    lexe::{self, serde_json, types::auth::ClientCredentials},
+    lexe::{self, serde_json},
     run::Sidecar,
-    NotifyOnce,
+    ClientCredentials, NotifyOnce,
 };
 use tokio::task::JoinHandle;
 use tracing::info;
@@ -80,14 +80,12 @@ fn init_server(
     let addr = SocketAddr::from(([127, 0, 0, 1], 0)); // 127.0.0.1:0
     args.listen_addr = Some(addr);
 
-    // Already handled by `args.or_env_mut()`, but demonstrates how to construct
-    // `ClientCredentials` yourself
-    if let Ok(credentials_str) = env::var("LEXE_CLIENT_CREDENTIALS") {
-        let credentials =
-            ClientCredentials::try_from_base64_blob(&credentials_str)
-                .with_context(|| credentials_str)
-                .context("Failed to parse credentials")?;
-        args.client_credentials = Some(credentials);
+    // Already handled by `args.or_env_mut()`, but demonstrates how to
+    // construct `ClientCredentials` from a string.
+    if let Ok(s) = env::var("LEXE_CLIENT_CREDENTIALS") {
+        let creds = ClientCredentials::from_str(&s)
+            .context("Invalid client credentials")?;
+        args.client_credentials = Some(creds);
     }
 
     // Init the `Sidecar` struct.
