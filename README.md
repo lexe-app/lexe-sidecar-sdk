@@ -412,6 +412,9 @@ The request body should be a JSON object with the following fields:
   If not specified, the payer will decide the amount.
 * `description: String` (optional): The payment description that will be
   presented to the payer.
+* `payer_note: String` (optional): An optional note received from the payer
+  out-of-band via LNURL-pay that is stored with this inbound payment.
+  If provided, must be non-empty and ≤200 chars / ≤512 UTF-8 bytes.
 
 **Response:**
 
@@ -475,6 +478,9 @@ The request body should be a JSON object with the following fields:
 * `invoice: String`: The encoded invoice string to pay.
 * `fallback_amount: String` (optional): For invoices without an amount specified, you must specify a fallback amount to pay.
 * `note: String` (optional): A personal note to attach to the payment. The receiver will not see this note.
+* `payer_note: String` (optional): An optional note sent to the receiver
+  out-of-band via LNURL-pay. Unlike `note`, this is visible to the recipient.
+  If provided, must be non-empty and ≤200 chars / ≤512 UTF-8 bytes.
 
 **Response:**
 
@@ -605,11 +611,22 @@ webhook URL:
   "rail": "invoice",
   "kind": "invoice",
   "direction": "inbound",
+  "txid": null,
   "amount": "1000",
   "fees": "0",
   "status": "completed",
   "status_msg": "completed",
-  "finalized_at": 1744926857989
+  "address": null,
+  "invoice": "lnbc10n1p5qz7z2dq...",
+  "tx": null,
+  "note": null,
+  "payer_name": null,
+  "payer_note": null,
+  "priority": null,
+  "expires_at": 1744930119917,
+  "finalized_at": 1744926857989,
+  "created_at": 1744926519917,
+  "updated_at": 1744926857989
 }
 ```
 
@@ -623,7 +640,7 @@ Otherwise, someone could trick your server into thinking a payment was finalized
 We recommend running your webhook endpoint on the same machine as the sidecar, so notifications can be received via localhost.
 
 **NOTE**: All webhook handling must be idempotent.
-In rare ocassions, you might receive a payment notification more than once.
+In rare occasions, you might receive a payment notification more than once.
 
 The Lexe Sidecar persists all webhook tracking state into a `.lexe/` directory
 in the current working directory. You can override this default directory by using
