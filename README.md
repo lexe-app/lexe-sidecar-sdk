@@ -414,7 +414,8 @@ network.
 
 The request body should be a JSON object with the following fields:
 
-* `expiration_secs: Int`: The number of seconds until the invoice expires.
+* `expiration_secs: Int` (optional): The number of seconds until the invoice expires.
+  If not specified, defaults to 86400 (1 day).
 * `amount: String` (optional): The amount to request in satoshis, as a string.
   If not specified, the payer will decide the amount.
 * `description: String` (optional): The payment description that will be
