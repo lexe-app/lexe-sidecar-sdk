@@ -26,12 +26,8 @@ The `lexe-sidecar` source code can be found in the Lexe monorepo at:
 
 To get started, you'll need a Lexe wallet. Download the Lexe mobile app for:
 
-* iOS (Testflight): <https://lexe.app/beta-ios>
-* Android (Play Store): <https://lexe.app/beta-android>
-
-> **Note for iOS users**: TestFlight sometimes asks for an "access code".
-> If you see this prompt, try clicking the download link again.
-> If that doesn't work, reinstall the TestFlight app and retry.
+* iOS (App Store): <https://lexe.app/ios>
+* Android (Play Store): <https://lexe.app/android>
 
 After installing the app, select "Create a new wallet", optionally connect your
 Google Drive (for backups), and set a backup password. This will create a new
