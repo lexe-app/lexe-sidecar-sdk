@@ -319,6 +319,8 @@ GET  /v2/health
 GET  /v2/node/node_info
 POST /v2/node/create_invoice
 POST /v2/node/pay_invoice
+POST /v2/node/create_offer
+POST /v2/node/pay_offer
 GET  /v2/node/payment
 ```
 
@@ -508,6 +510,87 @@ $ curl -X POST http://localhost:5393/v2/node/pay_invoice \
 {
   "index": "0000001744926842458-ln_e1f8e7fa3f3b43eb65afe4897ca1c63688636ba0a23b3011710e433b51bb3f9a",
   "created_at": 1744926842458
+}
+```
+
+### `POST /v2/node/create_offer`
+
+Create a reusable BOLT12 offer to receive Bitcoin over the Lightning network.
+Unlike invoices, offers are reusable: multiple payments can be made to it,
+including from multiple payers.
+
+**Request:**
+
+The request body should be a JSON object with the following fields:
+
+* `description: String` (optional): A description that will be presented to
+  the payer. If provided, must be non-empty and no longer than 200 chars /
+  512 UTF-8 bytes.
+* `min_amount: String` (optional): The minimum payment amount as a decimal
+  string in satoshis. If not specified, the payer can send any amount.
+* `expiration_secs: Int` (optional): The number of seconds until the offer expires.
+  If not specified, the offer does not expire.
+
+**Response:**
+
+- `offer`: The string-encoded BOLT 12 offer.
+
+**Examples:**
+
+```bash
+$ curl -X POST http://localhost:5393/v2/node/create_offer \
+    --header "content-type: application/json" \
+    --data '{}' \
+    | jq .
+{
+  "offer": "lno1qgsqvgnwgcg35z6ee2h3yczraddm72xrfua9uve2rlrm9deu7xyfzrcgqyqs..."
+}
+
+$ curl -X POST http://localhost:5393/v2/node/create_offer \
+    --header "content-type: application/json" \
+    --data '{ "description": "Tips", "min_amount": "100" }' \
+    | jq .
+{
+  "offer": "lno1qgsqvgnwgcg35z6ee2h3yczraddm72xrfua9uve2rlrm9deu7xyfzrcgqyqs..."
+}
+```
+
+### `POST /v2/node/pay_offer`
+
+Pay a BOLT12 offer.
+
+**Request:**
+
+The request body should be a JSON object with the following fields:
+
+* `offer: String`: The encoded BOLT 12 offer string to pay.
+* `amount: String`: The amount to pay in satoshis. If the offer specifies
+  a minimum amount, this value must satisfy that minimum.
+* `note: String` (optional): A personal note to attach to the payment.
+  The receiver will not see this note. If provided, must be non-empty
+  and no longer than 200 chars / 512 UTF-8 bytes.
+* `payer_note: String` (optional): A note included in the BOLT12 invoice
+  request and visible to the recipient. If provided, must be non-empty
+  and no longer than 200 chars / 512 UTF-8 bytes.
+
+**Response:**
+
+The response includes the `index` of the payment, which can be used to track the
+payment status via `GET /v2/node/payment`.
+
+- `index`: Identifier for this outbound offer payment.
+- `created_at`: When we tried to pay this offer, in milliseconds since the UNIX epoch.
+
+**Examples:**
+
+```bash
+$ curl -X POST http://localhost:5393/v2/node/pay_offer \
+    --header "content-type: application/json" \
+    --data '{ "offer": "lno1qgsqvgnwgcg35z6ee2h3yczraddm72xrfua9uve2rlrm9deu7xyfzrcgqyqs...", "amount": "1000" }' \
+    | jq .
+{
+  "index": "0000001777078225203-fs_b7f108c910b574cd8b69330881db1d4b9df73730eca49f92bfd167784715af29",
+  "created_at": 1777078225203
 }
 ```
 
