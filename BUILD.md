@@ -1,15 +1,15 @@
-# Building `lexe-sidecar` from source
+# Building the Lexe sidecar from source
 
-Lexe provides precompiled binaries for the `lexe-sidecar`, but the sidecar can
-also be built from source if your platform is not provided or you prefer the
-extra security.
+Lexe provides precompiled binaries for the Lexe sidecar, but it can also be
+built from source if your platform is not supported or you prefer the extra
+security.
 
 ## Steps
 
-Install `rustup`
+Install `rustup`:
 
 ```bash
-$ curl --proto '=https' --tlsv1.3 -sSf https://sh.rustup.rs | bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
 #  default host triple: default
 #    default toolchain: stable
@@ -20,31 +20,30 @@ $ curl --proto '=https' --tlsv1.3 -sSf https://sh.rustup.rs | bash
 Clone the `lexe-public` monorepo
 
 ```bash
-$ git clone https://github.com/lexe-app/lexe-public
-$ cd lexe-public
+git clone https://github.com/lexe-app/lexe-public
+cd lexe-public
 ```
 
-Build the sidecar binary and copy it to `~/bin`
+Build the sidecar and copy it to somewhere in PATH, for example `/usr/local/bin`:
 
 ```bash
-$ cargo build --release -p sdk-sidecar --bin lexe-sidecar
-$ mkdir -p ~/bin
-$ cp target/release/lexe-sidecar ~/bin
+cargo build --release -p sdk-sidecar --bin lexe-sidecar
+sudo cp target/release/lexe-sidecar /usr/local/bin
 ```
 
-Run the sidecar binary
+Run the sidecar:
 
 ```bash
-$ ~/bin/lexe-sidecar --help
+lexe-sidecar --help
 ```
 
 Update the sidecar frequently to ensure your app continues to run smoothly:
 
 ```bash
-$ cd lexe-public
-$ git pull
-$ cargo build --release -p sdk-sidecar --bin lexe-sidecar
-$ cp target/release/lexe-sidecar ~/bin
+cd lexe-public
+git pull
+cargo build --release -p sdk-sidecar --bin lexe-sidecar
+sudo cp target/release/lexe-sidecar /usr/local/bin
 ```
 
 See the [Quickstart](quickstart.md) page for remaining setup.
