@@ -616,6 +616,7 @@ If the payment is not found, the endpoint returns HTTP 404.
 - `kind`: The application-level payment kind, e.g. `"onchain"`, `"invoice"`, `"offer"`, `"spontaneous"`, `"waived_channel_fee"`, `"waived_liquidity_fee"`.
 - `direction`: The payment direction: `"inbound"`, `"outbound"`, or `"info"`.
 - `txid`: (Onchain payments only) The hex-encoded Bitcoin txid.
+- `preimage`: (Lightning payments only) Hex-encoded payment preimage (64 chars). Serves as proof-of-payment for outbound payments. For inbound payments, only populated if the payment succeeded.
 - `amount`: The payment amount in satoshis, or `null` for pending amountless invoices.
 - `fees`: Fees paid in satoshis.
 - `status`: The status of this payment: `"pending"`, `"completed"`, `"failed"`.
@@ -643,6 +644,7 @@ $ curl 'http://localhost:5393/v2/node/payment?index=0000001772349163844-ln_003dd
   "kind": "invoice",
   "direction": "inbound",
   "txid": null,
+  "preimage": null,
   "amount": null,
   "fees": "0",
   "status": "pending",
@@ -702,6 +704,7 @@ webhook URL:
   "rail": "invoice",
   "kind": "invoice",
   "direction": "inbound",
+  "preimage": "a1b2c3d4e5f6789012345678901234567890123456789012345678901234abcd",
   "txid": null,
   "amount": "1000",
   "fees": "0",
