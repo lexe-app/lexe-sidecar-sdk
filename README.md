@@ -409,7 +409,7 @@ $ curl http://localhost:5393/v2/node/node_info | jq .
 
 ### `POST /v2/node/create_invoice`
 
-Create a new BOLT11 Lightning invoice to receive Bitcoin over the Lightning
+Create a new BOLT 11 Lightning invoice to receive Bitcoin over the Lightning
 network.
 
 **Request:**
@@ -479,7 +479,7 @@ $ curl -X POST http://localhost:5393/v2/node/create_invoice \
 
 ### `POST /v2/node/pay_invoice`
 
-Pay a BOLT11 Lightning invoice.
+Pay a BOLT 11 Lightning invoice.
 
 **Request:**
 
@@ -515,7 +515,7 @@ $ curl -X POST http://localhost:5393/v2/node/pay_invoice \
 
 ### `POST /v2/node/create_offer`
 
-Create a reusable BOLT12 offer to receive Bitcoin over the Lightning network.
+Create a reusable BOLT 12 offer to receive Bitcoin over the Lightning network.
 Unlike invoices, offers are reusable: multiple payments can be made to it,
 including from multiple payers.
 
@@ -557,7 +557,7 @@ $ curl -X POST http://localhost:5393/v2/node/create_offer \
 
 ### `POST /v2/node/pay_offer`
 
-Pay a BOLT12 offer.
+Pay a BOLT 12 offer.
 
 **Request:**
 
@@ -569,7 +569,7 @@ The request body should be a JSON object with the following fields:
 * `note: String` (optional): A personal note to attach to the payment.
   The receiver will not see this note. If provided, must be non-empty
   and no longer than 200 chars / 512 UTF-8 bytes.
-* `payer_note: String` (optional): A note included in the BOLT12 invoice
+* `payer_note: String` (optional): A note included in the BOLT 12 invoice
   request and visible to the recipient. If provided, must be non-empty
   and no longer than 200 chars / 512 UTF-8 bytes.
 
@@ -621,7 +621,7 @@ If the payment is not found, the endpoint returns HTTP 404.
 - `status`: The status of this payment: `"pending"`, `"completed"`, `"failed"`.
 - `status_msg`: The payment status as a human-readable message. These strings are customized per payment type, e.g. "invoice generated", "timed out".
 - `address`: (Onchain send only) The destination Bitcoin address.
-- `invoice`: (Invoice payments only) The BOLT11 invoice string.
+- `invoice`: (Invoice payments only) The BOLT 11 invoice string.
 - `tx`: (Onchain payments only) The raw Bitcoin transaction.
 - `note`: An optional personal note attached to this payment.
 - `payer_name`: (Offer payments only) The payer's self-reported name.
