@@ -106,7 +106,7 @@ and manages the connection to your Lexe node.
 The easiest way to install `lexe-sidecar` is using the official install script:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/lexe-app/lexe-sidecar-sdk/master/install.sh | sh
+curl -fsSL https://lexe.app/install-sidecar.sh | sh
 ```
 
 This will install the `lexe-sidecar` binary at `~/.local/bin` and add it to your
@@ -227,7 +227,7 @@ Set up the Lexe Sidecar for my Replit project:
    (This is required for the install script below.)
 
 3. Install the `lexe-sidecar` binary.
-   $ curl -fsSL https://raw.githubusercontent.com/lexe-app/lexe-sidecar-sdk/master/install.sh | sh
+   $ curl -fsSL https://lexe.app/install-sidecar.sh | sh
 
 4. Prompt me for my `LEXE_CLIENT_CREDENTIALS` value and configure it as a Replit secret.
 
@@ -280,7 +280,7 @@ and verify the setup is working.
 
 If you prefer to configure manually:
 
-1. Install `lexe-sidecar`: `curl -fsSL https://raw.githubusercontent.com/lexe-app/lexe-sidecar-sdk/master/install.sh | sh`
+1. Install `lexe-sidecar`: `curl -fsSL https://lexe.app/install-sidecar.sh | sh`
 2. Configure your `LEXE_CLIENT_CREDENTIALS` as a Replit secret
 3. Update `.replit` to add a "Lexe Sidecar" workflow that runs `./.local/bin/lexe-sidecar` in parallel with your app
 4. Update the `[deployment]` section's `run` to prepend `./.local/bin/lexe-sidecar &`
