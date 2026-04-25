@@ -215,7 +215,7 @@ download_binary_and_run_installer() {
     _updater_bin=""
     ;;
   "lexe-sidecar-linux-aarch64.zip")
-    _arch="aarch64-unknown-linux-gnu"
+    _arch="aarch64-unknown-linux-musl"
     _zip_ext=".zip"
     _bins="lexe-sidecar"
     _bins_js_array='"lexe-sidecar"'
@@ -227,7 +227,7 @@ download_binary_and_run_installer() {
     _updater_bin=""
     ;;
   "lexe-sidecar-linux-x86_64.zip")
-    _arch="x86_64-unknown-linux-gnu"
+    _arch="x86_64-unknown-linux-musl"
     _zip_ext=".zip"
     _bins="lexe-sidecar"
     _bins_js_array='"lexe-sidecar"'
