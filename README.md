@@ -425,6 +425,14 @@ The request body should be a JSON object with the following fields:
 * `payer_note: String` (optional): An optional note received from the payer
   out-of-band via LNURL-pay that is stored with this inbound payment.
   If provided, must be non-empty and ≤200 chars / ≤512 UTF-8 bytes.
+* `partner_pk: String` (optional): The hex-encoded user_pk of a Lexe partner
+  setting the fee for this payment instead of using Lexe's default fees.
+  Must be set for `partner_prop_fee` and `partner_base_fee` to take effect.
+* `partner_prop_fee: Int` (optional): The partner-chosen proportional fee in
+  parts per million (ppm). Required if `partner_pk` is set.
+  Minimum: 5000 ppm. Maximum: 500000 ppm (50%).
+* `partner_base_fee: String` (optional): The partner-chosen base fee in satoshis,
+  as a string. If set, `amount` must also be set.
 
 **Response:**
 
