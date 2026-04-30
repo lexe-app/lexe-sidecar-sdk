@@ -621,6 +621,9 @@ If the payment is not found, the endpoint returns HTTP 404.
 - `txid`: (Onchain payments only) The hex-encoded Bitcoin txid.
 - `amount`: The payment amount in satoshis, or `null` for pending amountless invoices.
 - `fees`: Fees paid in satoshis.
+- `partner_pk`: (optional) Hex-encoded partner user public key, if a Lexe partner set the fees for this payment instead of using Lexe's default fees.
+- `partner_prop_fee`: (optional) The proportional fee set by the partner, in parts per million.
+- `partner_base_fee`: (optional) The base fee set by the partner, in satoshis.
 - `status`: The status of this payment: `"pending"`, `"completed"`, `"failed"`.
 - `status_msg`: The payment status as a human-readable message. These strings are customized per payment type, e.g. "invoice generated", "timed out".
 - `address`: (Onchain send only) The destination Bitcoin address.
@@ -651,6 +654,9 @@ $ curl 'http://localhost:5393/v2/node/payment?index=0000001772349163844-ln_003dd
   "txid": null,
   "amount": null,
   "fees": "0",
+  "partner_pk": null,
+  "partner_prop_fee": null,
+  "partner_base_fee": null,
   "status": "pending",
   "status_msg": "invoice generated",
   "address": null,
@@ -714,6 +720,9 @@ webhook URL:
   "txid": null,
   "amount": "1000",
   "fees": "0",
+  "partner_pk": null,
+  "partner_prop_fee": null,
+  "partner_base_fee": null,
   "status": "completed",
   "status_msg": "completed",
   "address": null,
