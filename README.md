@@ -422,7 +422,7 @@ The request body should be a JSON object with the following fields:
   If not specified, the payer will decide the amount.
 * `description: String` (optional): The payment description that will be
   presented to the payer.
-* `payer_note: String` (optional): An optional note received from the payer
+* `message: String` (optional): An optional message received from the payer
   out-of-band via LNURL-pay that is stored with this inbound payment.
   If provided, must be non-empty and ≤200 chars / ≤512 UTF-8 bytes.
 * `partner_pk: String` (optional): The hex-encoded user_pk of a Lexe partner
@@ -495,10 +495,11 @@ The request body should be a JSON object with the following fields:
 
 * `invoice: String`: The encoded invoice string to pay.
 * `fallback_amount: String` (optional): For invoices without an amount specified, you must specify a fallback amount to pay.
-* `note: String` (optional): A personal note to attach to the payment. The receiver will not see this note.
-* `payer_note: String` (optional): An optional note sent to the receiver
-  out-of-band via LNURL-pay. Unlike `note`, this is visible to the recipient.
+* `message: String` (optional): An optional message sent to the receiver
+  out-of-band via LNURL-pay. This is visible to the recipient.
   If provided, must be non-empty and ≤200 chars / ≤512 UTF-8 bytes.
+* `personal_note: String` (optional): A personal note to attach to the payment.
+  The receiver will not see this note.
 
 **Response:**
 
@@ -574,11 +575,11 @@ The request body should be a JSON object with the following fields:
 * `offer: String`: The encoded BOLT 12 offer string to pay.
 * `amount: String`: The amount to pay in satoshis. If the offer specifies
   a minimum amount, this value must satisfy that minimum.
-* `note: String` (optional): A personal note to attach to the payment.
-  The receiver will not see this note. If provided, must be non-empty
-  and no longer than 200 chars / 512 UTF-8 bytes.
-* `payer_note: String` (optional): A note included in the BOLT 12 invoice
+* `message: String` (optional): A message included in the BOLT 12 invoice
   request and visible to the recipient. If provided, must be non-empty
+  and no longer than 200 chars / 512 UTF-8 bytes.
+* `personal_note: String` (optional): A personal note to attach to the payment.
+  The receiver will not see this note. If provided, must be non-empty
   and no longer than 200 chars / 512 UTF-8 bytes.
 
 **Response:**
@@ -637,9 +638,9 @@ If the payment is not found, the endpoint returns HTTP 404.
 - `address`: (Onchain send only) The destination Bitcoin address.
 - `invoice`: (Invoice payments only) The BOLT 11 invoice string.
 - `tx`: (Onchain payments only) The raw Bitcoin transaction.
-- `note`: An optional personal note attached to this payment.
 - `payer_name`: (Offer payments only) The payer's self-reported name.
-- `payer_note`: (Offer payments, LNURL-pay invoices) A payer-provided note.
+- `message`: (Offer payments, LNURL-pay invoices) A payer-provided message.
+- `personal_note`: An optional personal note attached to this payment.
 - `priority`: (Onchain send only) The confirmation priority: `"high"`, `"normal"`, `"background"`.
 - `expires_at`: The invoice or offer expiry time, in milliseconds since the UNIX epoch.
 - `finalized_at`: If this payment is finalized, meaning it is "completed" or "failed", this is the time it was finalized, in milliseconds since the UNIX epoch.
@@ -670,9 +671,9 @@ $ curl 'http://localhost:5393/v2/node/payment?index=0000001772349163844-ln_003dd
   "address": null,
   "invoice": "lnbc1p568ehtdqqpp5qq7aywhv2ah86rv942v3l7wzm3r3l47gv0lnrwfmlwczsdht266scqpcsp5a3v0skathghudyaszdze77dnuh7pnza7phagq5c7ke5mqra3nuqs9qyysgqxqrrssnp4qgp7wwlqvnxfr40re9kcute0zf8nr9hq06v3ddgnq7m074qekk0kurzjqv22wafr68wtchd4vzq7mj7zf2uzpv67xsaxcemfzak7wp7p0r29wzxnguqq2qsqqcqqqqqqqqqqhwqqfq73dfkaqrghzc0lpgeandl5zfjxh2z6fhk47sfph40dqv72tefmw9j4a7c8w0f0l7uyjfa9dzwpy7ypllmvmxd4n2ggfufd593yh5v7cq5uaa9s",
   "tx": null,
-  "note": null,
   "payer_name": null,
-  "payer_note": null,
+  "message": null,
+  "personal_note": null,
   "priority": null,
   "expires_at": 1772352763000,
   "finalized_at": null,
@@ -736,9 +737,9 @@ webhook URL:
   "address": null,
   "invoice": "lnbc10n1p5qz7z2dq...",
   "tx": null,
-  "note": null,
   "payer_name": null,
-  "payer_note": null,
+  "message": null,
+  "personal_note": null,
   "priority": null,
   "expires_at": 1744930119917,
   "finalized_at": 1744926857989,
