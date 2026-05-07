@@ -1,13 +1,14 @@
 use std::{env, net::SocketAddr, str::FromStr};
 
 use anyhow::Context;
+use lexe::types::auth::ClientCredentials;
 use lexe_sidecar::{
     cli::SidecarArgs,
     client::SidecarClient,
     def::UserSidecarApi,
     lexe::{self, serde_json},
     run::Sidecar,
-    ClientCredentials, NotifyOnce,
+    NotifyOnce,
 };
 use tokio::task::JoinHandle;
 use tracing::info;
