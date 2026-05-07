@@ -9,6 +9,8 @@ requests like
 
 ```
 GET  http://localhost:5393/v2/node/node_info
+GET  http://localhost:5393/v2/node/analyze
+POST http://localhost:5393/v2/node/pay
 POST http://localhost:5393/v2/node/create_invoice
 POST http://localhost:5393/v2/node/pay_invoice
 GET  http://localhost:5393/v2/node/payment
