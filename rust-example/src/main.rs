@@ -94,14 +94,10 @@ fn init_server(
     let sidecar_url = sidecar.url();
     let sidecar_shutdown = sidecar.shutdown_channel();
 
-    // Optionally spawn a Ctrl+C handler.
-    // It sends a signal over `sidecar_shutdown` when Ctrl+C is pressed.
-    let spawn_ctrlc_handler = true;
-
     // Spawn the sidecar off into a task. You could also just `.await` on it:
-    // `sidecar.run(spawn_ctrlc_handler).await`.
+    // `sidecar.run().await`.
     #[allow(clippy::disallowed_methods)] // LxTask is internal to Lexe
-    let sidecar_task = tokio::task::spawn(sidecar.run(spawn_ctrlc_handler));
+    let sidecar_task = tokio::task::spawn(sidecar.run());
 
     info!("Sidecar server initialized; running at {sidecar_url}");
 
