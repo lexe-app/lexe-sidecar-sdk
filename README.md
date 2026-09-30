@@ -1,5 +1,12 @@
 # Lexe Sidecar SDK
 
+**This repository is archived.** The Lexe Sidecar SDK is maintained in
+[`lexe-app/lexe-public`](https://github.com/lexe-app/lexe-public).
+
+- Docs: <https://docs.lexe.tech/sidecar/>
+- Source code: <https://github.com/lexe-app/lexe-public/tree/master/sdk-sidecar>
+- Binary releases: <https://github.com/lexe-app/lexe-public/releases>
+
 The Lexe Sidecar SDK presents a simple JSON API for developers to control their
 self-custodial, always-online [Lexe](https://lexe.app) node which can send and
 receive payments over the Lightning Network. Running the `lexe-sidecar` binary
@@ -18,17 +25,3 @@ GET  http://localhost:5393/v2/node/payment
 
 you can programmatically control your Lexe node. Your app can be written in any
 language, and is portable to any environment where the `lexe-sidecar` can run.
-
-Install:
-
-```bash
-curl -fsSL https://lexe.app/install-sidecar.sh | sh
-```
-
-Docs:
-
-- [Overview](https://docs.lexe.tech/sidecar/)
-- [Quickstart](https://docs.lexe.tech/sidecar/quickstart/)
-- [REST API Reference](https://docs.lexe.tech/sidecar/api-reference/)
-- [Build from source](https://docs.lexe.tech/sidecar/build-from-source/)
-- [Source code](https://github.com/lexe-app/lexe-public/tree/master/sdk-sidecar)
