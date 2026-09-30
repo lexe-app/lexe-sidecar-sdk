@@ -1,11 +1,16 @@
 # Lexe Sidecar SDK
 
-**This repository is archived.** The Lexe Sidecar SDK is maintained in
+## Notice
+
+**This repository is archived.** The Lexe Sidecar SDK still exists and is
+actively maintained in
 [`lexe-app/lexe-public`](https://github.com/lexe-app/lexe-public).
 
 - Docs: <https://docs.lexe.tech/sidecar/>
 - Source code: <https://github.com/lexe-app/lexe-public/tree/master/sdk-sidecar>
 - Binary releases: <https://github.com/lexe-app/lexe-public/releases>
+
+## Description
 
 The Lexe Sidecar SDK presents a simple JSON API for developers to control their
 self-custodial, always-online [Lexe](https://lexe.app) node which can send and
